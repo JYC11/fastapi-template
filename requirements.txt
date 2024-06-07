@@ -1,0 +1,5 @@
+fastapi==0.111.0
+SQLAlchemy==2.0.30
+greenlet==3.0.3
+attrs==23.2.0
+nanoid==2.0.0

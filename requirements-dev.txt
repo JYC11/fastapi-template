@@ -1,0 +1,7 @@
+-r requirements.txt
+
+ruff==0.4.7
+black==24.4.2
+mypy==1.10.0
+pytest==8.2.2
+sqlalchemy2-stubs==0.0.2a38
