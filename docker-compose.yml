@@ -1,0 +1,15 @@
+version: "3"
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    build:
+      dockerfile: Dockerfile
+    container_name: template-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./db/.pgdata:/var/lib/postgresql
