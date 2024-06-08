@@ -30,3 +30,6 @@ class User(Base):
     phone: str = field()
     email: str = field()
     password: str = field()
+
+
+# TODO job store
