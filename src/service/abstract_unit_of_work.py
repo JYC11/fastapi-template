@@ -1,15 +1,18 @@
 import abc
-from typing import Any
+from collections import deque
+from typing import Any, Type
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.adapters.abstract_repository import AbstractRepository
+from src.domain import Message
 
 
 class AbstractUnitOfWork(abc.ABC):
     async def __aenter__(self) -> "AbstractUnitOfWork":
         self.session: AsyncSession
-        self.events: list
+        self.repositories: dict[str, Type[AbstractRepository]]
+        self.events: deque[Message]
         self.users: AbstractRepository
         self.failed_message_log: AbstractRepository
         return self

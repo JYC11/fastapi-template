@@ -3,9 +3,7 @@ import inspect
 
 from typing_extensions import Callable
 
-from src.domain import Message
-from src.domain.command import Command
-from src.domain.event import Event
+from src.domain import Command, Event, Message
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
 
 

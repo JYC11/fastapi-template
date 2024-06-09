@@ -1,6 +1,12 @@
 from typing import Union
 
-from src.domain.command import Command
-from src.domain.event import Event
+from pydantic import BaseModel
+
+
+class Command(BaseModel): ...
+
+
+class Event(BaseModel): ...
+
 
 Message = Union[Command, Event]

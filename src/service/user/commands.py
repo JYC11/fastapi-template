@@ -1,4 +1,4 @@
-from src.domain.command import Command
+from src.domain import Command
 
 
 class CreateUser(Command):

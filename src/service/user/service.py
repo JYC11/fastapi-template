@@ -7,6 +7,7 @@ from src.service.abstract_service import AbstractService
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
 from src.service.exceptions import ItemNotFound
 from src.service.user.commands import CreateUser, DeleteUser, UpdateUser
+from src.service.user.events import UserCreated, UserDeleted, UserUpdated
 from src.service.user.exceptions import DuplicateUserByEmail, DuplicateUserByPhone
 
 
@@ -34,6 +35,7 @@ class UserService(AbstractService):
             )
             self.uow.users.add(user)
             await self.uow.commit()
+            self.uow.events.appendleft(UserCreated())
             return user
 
     async def update(self, cmd: UpdateUser) -> User:
@@ -48,10 +50,12 @@ class UserService(AbstractService):
                 }
             )
             await self.uow.commit()
+            self.uow.events.appendleft(UserUpdated())
             return user
 
     async def delete(self, cmd: DeleteUser) -> None:
         async with self.uow:
             await self.uow.users.remove(ident=cmd.id)
             await self.uow.commit()
+            self.uow.events.appendleft(UserDeleted())
             return

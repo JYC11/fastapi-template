@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.adapters.orm import start_mappers
+from src.adapters.persistent_orm import start_mappers
 from src.common.settings import settings
 
 engine: AsyncEngine | None = None
@@ -10,7 +10,7 @@ async_transactional_session_factory: sessionmaker | None = None
 async_autocommit_session_factory: sessionmaker | None = None
 
 
-if settings.stage != "TEST" or settings.is_ci is True:
+if settings.stage != "TEST" or settings.is_ci is False:
     engine = create_async_engine(
         settings.db_settings.url,
         pool_pre_ping=True,

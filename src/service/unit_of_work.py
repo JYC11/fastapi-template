@@ -1,3 +1,4 @@
+from collections import deque
 from typing import Type
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -5,6 +6,7 @@ from sqlalchemy.orm.exc import StaleDataError
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.common.db import async_transactional_session_factory
+from src.domain import Message
 from src.service import exceptions
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
 
@@ -19,7 +21,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         session_factory=DEFAULT_TRANSACTIONAL_FACTORY,
     ):
         self.repositories = repositories
-        self.events = list()
+        self.events: deque[Message] = deque()
         self.session_factory = session_factory
 
     async def __aenter__(self) -> AbstractUnitOfWork:
@@ -45,3 +47,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
 
     async def _refresh(self, object):
         await self.session.refresh(object)
+
+
+def get_uow(repositories: dict[str, Type[AbstractRepository]]) -> AbstractUnitOfWork:
+    return SqlAlchemyUnitOfWork(repositories=repositories)

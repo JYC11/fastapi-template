@@ -1,13 +1,11 @@
 from collections import defaultdict, deque
 from typing import Any, Callable, Literal, Type
 
-from src.domain import Message
-from src.domain.command import Command
-from src.domain.event import Event
+from src.domain import Command, Event, Message
 from src.domain.models import FailedMessageLog
+from src.service import factory
 from src.service.abstract_service import AbstractService
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
-from src.service.factory import get_user_service
 from src.service.failed_message_log.repository import FailedMessageLogRepository
 from src.service.unit_of_work import SqlAlchemyUnitOfWork
 from src.service.user import commands as user_commands
@@ -78,13 +76,18 @@ class MessageBus:
             )
 
 
+event_handlers: dict[Type[Event], list[tuple[Callable[..., AbstractService], str]]] = defaultdict(list)
+
+command_handlers: dict[Type[Command], tuple[Callable[..., AbstractService], str]] = {
+    user_commands.CreateUser: (factory.get_user_service, "create"),
+    user_commands.UpdateUser: (factory.get_user_service, "update"),
+    user_commands.DeleteUser: (factory.get_user_service, "delete"),
+}
+
+
 def get_message_bus():
     return MessageBus(
         uow=SqlAlchemyUnitOfWork(repositories=dict(failed_message_log=FailedMessageLogRepository)),
-        event_handlers=defaultdict(list),
-        command_handlers={
-            user_commands.CreateUser: (get_user_service, "create"),
-            user_commands.UpdateUser: (get_user_service, "update"),
-            user_commands.DeleteUser: (get_user_service, "delete"),
-        },
+        event_handlers=event_handlers,
+        command_handlers=command_handlers,
     )
