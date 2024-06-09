@@ -35,7 +35,3 @@ class AbstractUnitOfWork(abc.ABC):
     @abc.abstractmethod
     async def _refresh(self, object: Any):
         raise NotImplementedError
-
-    @abc.abstractmethod
-    def collect_new_events(self):
-        raise NotImplementedError

@@ -1,3 +1,5 @@
+from typing import Type
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import StaleDataError
 
@@ -13,7 +15,7 @@ assert DEFAULT_TRANSACTIONAL_FACTORY is not None
 class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
     def __init__(
         self,
-        repositories: dict[str, AbstractRepository],
+        repositories: dict[str, Type[AbstractRepository]],
         session_factory=DEFAULT_TRANSACTIONAL_FACTORY,
     ):
         self.repositories = repositories
@@ -21,9 +23,10 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
 
     async def __aenter__(self) -> AbstractUnitOfWork:
         self.session: AsyncSession = self.session_factory()
-        for attr, repository in self.repositories.items():
-            if hasattr(self, attr):
-                setattr(self, attr, repository(session=self.session))  # type: ignore
+        if self.repositories:
+            for attr, repository in self.repositories.items():
+                if hasattr(self, attr):
+                    setattr(self, attr, repository(session=self.session))
         return await super().__aenter__()
 
     async def __aexit__(self, *args):

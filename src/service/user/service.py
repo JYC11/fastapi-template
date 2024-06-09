@@ -1,11 +1,9 @@
-
-
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
 
 
 class UserService:
-    def __init__(self, unit_of_work: AbstractUnitOfWork):
-        self.unit_of_work = unit_of_work
+    def __init__(self, uow: AbstractUnitOfWork):
+        self.uow = uow
 
     def create(self):
         return  # TODO
