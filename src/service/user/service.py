@@ -1,15 +1,16 @@
+from src.service.abstract_service import AbstractService
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
 
 
-class UserService:
+class UserService(AbstractService):
     def __init__(self, uow: AbstractUnitOfWork):
         self.uow = uow
 
-    def create(self):
+    async def create(self):
         return  # TODO
 
-    def update(self):
+    async def update(self):
         return  # TODO
 
-    def delete(self):
+    async def delete(self):
         return  # TODO

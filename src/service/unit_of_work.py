@@ -19,6 +19,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         session_factory=DEFAULT_TRANSACTIONAL_FACTORY,
     ):
         self.repositories = repositories
+        self.events = list()
         self.session_factory = session_factory
 
     async def __aenter__(self) -> AbstractUnitOfWork:

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from attrs import define, field
 from nanoid import generate  # type: ignore
@@ -26,10 +26,19 @@ class Base:
         return self
 
 
+@define(kw_only=True)
+class FailedMessageLog(Base):
+    message_type: Literal["COMMAND", "EVENT"] = field()
+    message_name: str = field()
+    error_message: str = field()
+
+
+@define(kw_only=True)
+class JobStore(Base): ...
+
+
+@define(kw_only=True)
 class User(Base):
     phone: str = field()
     email: str = field()
     password: str = field()
-
-
-# TODO job store
