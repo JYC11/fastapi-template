@@ -23,27 +23,11 @@ class SqlAlchemyRepository[T](AbstractRepository):  # type: ignore
     def _add_all(self, items: list[T]):
         self.session.add_all(items)
 
-    async def _get(self, ident: UUID) -> T | None:
-        _query = self.query.where(self.model.id == ident)  # type: ignore
-        execution = await self.session.execute(_query)
-        model: T | None = execution.scalar_one_or_none()
-        return model
-
-    async def _remove(self, ident: UUID) -> None:
-        model = await self._get(ident)  # type: ignore
-        if model:
-            await self.session.delete(model)
-        return
-
-    async def _list(
+    def _get_filters(
         self,
         *args,
         **kwargs,
-    ) -> list[T]:
-        if not args and not kwargs:
-            execution = await self.session.execute(self.query)
-            models = execution.scalars().all()
-            return models
+    ) -> list[Any]:
         _filters: list[Any] = []
         _filters.extend(args)
         if kwargs:
@@ -75,6 +59,37 @@ class SqlAlchemyRepository[T](AbstractRepository):  # type: ignore
                     _filters.append(model_column.like(f"%{value}%"))
                 elif operator == "is":
                     _filters.append(model_column.is_(value))
+        return _filters
+
+    async def _get(self, ident: UUID) -> T | None:
+        _query = self.query.where(self.model.id == ident)  # type: ignore
+        execution = await self.session.execute(_query)
+        model: T | None = execution.scalar_one_or_none()
+        return model
+
+    async def _get_by(self, *args, **kwargs) -> T | None:
+        _filters = self._get_filters(*args, **kwargs)
+        _query = self.query.where(*_filters)
+        execution = await self.session.execute(_query)
+        model: T | None = execution.scalar_one_or_none()
+        return model
+
+    async def _remove(self, ident: UUID) -> None:
+        model = await self._get(ident)  # type: ignore
+        if model:
+            await self.session.delete(model)
+        return
+
+    async def _list(
+        self,
+        *args,
+        **kwargs,
+    ) -> list[T]:
+        if not args and not kwargs:
+            execution = await self.session.execute(self.query)
+            models = execution.scalars().all()
+            return models
+        _filters = self._get_filters(*args, **kwargs)
 
         _query = self.query.where(*_filters)
         execution = await self.session.execute(_query)

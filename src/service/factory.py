@@ -1,5 +1,7 @@
 from typing import Type
 
+from argon2 import PasswordHasher
+
 from src.adapters.abstract_repository import AbstractRepository
 from src.service.abstract_service import AbstractService
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
@@ -13,5 +15,7 @@ def get_unit_of_work(repositories: dict[str, Type[AbstractRepository]]) -> Abstr
 
 
 def get_user_service() -> AbstractService:
-    uow = get_unit_of_work(repositories=dict(user=UserRepository))
-    return UserService(uow=uow)
+    return UserService(
+        uow=get_unit_of_work(repositories=dict(user=UserRepository)),
+        hasher=PasswordHasher(),
+    )

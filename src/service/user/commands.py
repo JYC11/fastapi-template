@@ -11,7 +11,9 @@ class UpdateUser(Command):
     id: str
     phone: str
     email: str
-    password: str
+
+
+# TODO update password
 
 
 class DeleteUser(Command):

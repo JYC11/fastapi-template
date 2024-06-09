@@ -18,6 +18,9 @@ class AbstractRepository(abc.ABC):
     async def _get(self, ident: Any) -> Any | None: ...
 
     @abc.abstractmethod
+    async def _get_by(self, *args, **kwargs) -> Any | None: ...
+
+    @abc.abstractmethod
     async def _remove(self, ident: Any) -> None: ...
 
     @abc.abstractmethod
@@ -31,6 +34,9 @@ class AbstractRepository(abc.ABC):
 
     async def get(self, ident: Any):
         return await self._get(ident)
+
+    async def get_by(self, *args, **kwargs):
+        return await self._get_by(*args, **kwargs)
 
     async def remove(self, ident: Any):
         return await self._remove(ident)
