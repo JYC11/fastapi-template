@@ -1,6 +1,6 @@
 #!/bin/sh -e
 set -x
 
-ruff check --fix src
-black src --line-length=120
+ruff check --fix .
+black . --line-length=120
 mypy --check-untyped-defs -p src

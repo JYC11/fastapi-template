@@ -5,9 +5,9 @@ services:
     build: .
     container_name: postgres
     environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
     ports:
       - "5432:5432"
     volumes:

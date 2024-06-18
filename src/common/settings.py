@@ -13,9 +13,9 @@ if not os.getenv("STAGE"):
 
 class DBSettings(BaseSettings):
     server: str = "localhost"
-    user: str = "root"
-    password: str = ""
-    db: str = "bug_tracker"
+    user: str = "admin"
+    password: str = "root"
+    db: str = "postgres"
     port: int = 5432
     pool_size: int = 10
     max_overflow: int = 10

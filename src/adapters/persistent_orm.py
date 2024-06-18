@@ -35,7 +35,7 @@ user = sa.Table(
 )
 
 failed_message_log = sa.Table(
-    "user",
+    "failed_message_log",
     mapper_registry.metadata,
     sa.Column(
         "id",
