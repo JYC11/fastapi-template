@@ -8,7 +8,6 @@ from sqlalchemy.orm import clear_mappers, sessionmaker
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
-from src.common.settings import settings
 from src.service import unit_of_work
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
 from src.service.failed_message_log.repository import FailedMessageLogRepository
@@ -29,16 +28,13 @@ async def async_engine() -> AsyncGenerator[AsyncEngine, None]:
     engine = create_async_engine(
         "sqlite+aiosqlite:///:memory:",
         connect_args={"check_same_thread": False},
-        pool_size=settings.db_settings.pool_size,
-        max_overflow=settings.db_settings.max_overflow,
         future=True,
     )
     async with engine.connect() as conn:
         async with conn.begin():
             await conn.run_sync(metadata.drop_all)
             await conn.run_sync(metadata.create_all)
-    if settings.is_ci is False:
-        start_mappers()
+    start_mappers()
     yield engine
     clear_mappers()
 
@@ -60,6 +56,12 @@ async def session_factory(async_engine: AsyncEngine) -> AsyncGenerator[async_sco
             async with async_engine.connect() as conn:
                 async with conn.begin():
                     await conn.run_sync(metadata.drop_all)
+
+
+@pytest_asyncio.fixture(scope="function")
+async def session(session_factory):
+    async with session_factory() as _session:
+        yield _session
 
 
 # DEPENDENCIES AND FAKE DEPENDENCIES
