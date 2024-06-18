@@ -11,7 +11,6 @@ from src.service import exceptions
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
 
 DEFAULT_TRANSACTIONAL_FACTORY = async_transactional_session_factory
-assert DEFAULT_TRANSACTIONAL_FACTORY is not None
 
 
 class SqlAlchemyUnitOfWork(AbstractUnitOfWork):

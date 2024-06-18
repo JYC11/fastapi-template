@@ -1,15 +1,15 @@
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Literal
 
-from attrs import define, field
 from nanoid import generate  # type: ignore
 
 
-@define(kw_only=True)
+@dataclass(repr=True, eq=False)
 class Base:
     id: str = field(default=generate())
-    created_date: datetime = field(default=datetime.now())
-    updated_date: datetime | None = field(default=None)
+    create_date: datetime = field(init=False, repr=True)
+    update_date: datetime = field(init=False, repr=True)
 
     def __eq__(self, other):
         if not isinstance(other, Base):
@@ -26,19 +26,19 @@ class Base:
         return self
 
 
-@define(kw_only=True)
+@dataclass(repr=True, eq=False)
 class FailedMessageLog(Base):
-    message_type: Literal["COMMAND", "EVENT"] = field()
-    message_name: str = field()
-    error_message: str = field()
+    message_type: Literal["COMMAND", "EVENT"] = field(default="EVENT")
+    message_name: str = field(default="")
+    error_message: str = field(default="")
 
 
-@define(kw_only=True)
+@dataclass(repr=True, eq=False)
 class JobStore(Base): ...
 
 
-@define(kw_only=True)
+@dataclass(repr=True, eq=False)
 class User(Base):
-    phone: str = field()
-    email: str = field()
-    password: str = field()
+    phone: str = field(default="")
+    email: str = field(default="")
+    password: str = field(default="")

@@ -10,7 +10,7 @@ async_transactional_session_factory: sessionmaker | None = None
 async_autocommit_session_factory: sessionmaker | None = None
 
 
-if settings.stage != "TEST" or settings.is_ci is False:
+if settings.stage != "TEST" or settings.is_ci is True:
     engine = create_async_engine(
         settings.db_settings.url,
         pool_pre_ping=True,
