@@ -3,12 +3,12 @@ from typing import Any, Callable, Literal, Type
 
 from src.domain import Command, Event, Message
 from src.domain.models import FailedMessageLog
+from src.domain.user import commands as user_commands
 from src.service import factory
-from src.service.abstract_service import AbstractService
-from src.service.abstract_unit_of_work import AbstractUnitOfWork
+from src.service.abstracts.abstract_service import AbstractService
+from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service.failed_message_log.repository import FailedMessageLogRepository
 from src.service.unit_of_work import SqlAlchemyUnitOfWork
-from src.service.user import commands as user_commands
 
 
 class MessageBus:

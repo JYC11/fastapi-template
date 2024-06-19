@@ -8,8 +8,8 @@ from sqlalchemy.orm import clear_mappers, sessionmaker
 from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
 from src.service import unit_of_work
-from src.service.abstract_unit_of_work import AbstractUnitOfWork
-from src.service.abstract_view import AbstractView
+from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
+from src.service.abstracts.abstract_view import AbstractView
 from src.service.failed_message_log.repository import FailedMessageLogRepository
 from src.service.message_bus import MessageBus, command_handlers, event_handlers
 from src.service.unit_of_work import SqlAlchemyUnitOfWork

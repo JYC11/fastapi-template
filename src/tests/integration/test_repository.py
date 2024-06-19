@@ -20,6 +20,8 @@ async def test_repository(session: AsyncSession):
     assert found_by_pk is not None
 
     # THEN
+    assert found_by_pk.create_date is not None
+    assert found_by_pk.update_date is None
     assert found_by_pk.email == user.email
     assert found_by_pk.password == user.password
     assert found_by_pk.phone == user.phone

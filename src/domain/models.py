@@ -4,12 +4,14 @@ from typing import Any, Literal
 
 from nanoid import generate  # type: ignore
 
+from src.domain.user.dto import UserOut
+
 
 @dataclass(repr=True, eq=False)
 class Base:
     id: str = field(default_factory=generate)
-    create_date: datetime = field(init=False, repr=True)
-    update_date: datetime = field(init=False, repr=True)
+    create_date: datetime = field(default_factory=datetime.now, repr=True)
+    update_date: datetime | None = field(default=None, repr=True)
 
     def __eq__(self, other):
         if not isinstance(other, Base):
@@ -24,6 +26,9 @@ class Base:
             if hasattr(self, k):
                 setattr(self, k, v)
         return self
+
+    def to_dto(self):
+        raise NotImplementedError
 
 
 @dataclass(repr=True, eq=False)
@@ -42,3 +47,12 @@ class User(Base):
     phone: str = field(default="")
     email: str = field(default="")
     password: str = field(default="")
+
+    def to_dto(self):
+        return UserOut(
+            id=self.id,
+            create_date=self.create_date,
+            update_date=self.update_date,
+            email=self.email,
+            phone=self.phone,
+        )

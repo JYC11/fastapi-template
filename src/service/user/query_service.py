@@ -1,6 +1,6 @@
 from src.domain.models import User
-from src.service.abstract_query_service import AbstractQueryService
-from src.service.abstract_view import AbstractView
+from src.service.abstracts.abstract_query_service import AbstractQueryService
+from src.service.abstracts.abstract_view import AbstractView
 from src.service.exceptions import ItemNotFound
 
 

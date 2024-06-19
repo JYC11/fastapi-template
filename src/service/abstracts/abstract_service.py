@@ -5,7 +5,7 @@ from typing import Any
 from typing_extensions import Callable
 
 from src.domain import Command, Event, Message
-from src.service.abstract_unit_of_work import AbstractUnitOfWork
+from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service.exceptions import MethodNotFound
 
 

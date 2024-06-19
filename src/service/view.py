@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.common.db import async_autocommit_session_factory
-from src.service.abstract_view import AbstractView
+from src.service.abstracts.abstract_view import AbstractView
 
 DEFAULT_AUTOCOMMIT_SESSION_FACTORY = async_autocommit_session_factory
 

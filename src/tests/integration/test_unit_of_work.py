@@ -1,7 +1,7 @@
 import pytest
 
 from src.domain.models import User
-from src.service.abstract_unit_of_work import AbstractUnitOfWork
+from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service.user.repository import UserRepository
 
 

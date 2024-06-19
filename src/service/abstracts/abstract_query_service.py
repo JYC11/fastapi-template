@@ -1,7 +1,7 @@
 import abc
 from typing import Any
 
-from src.service.abstract_view import AbstractView
+from src.service.abstracts.abstract_view import AbstractView
 
 
 class AbstractQueryService(abc.ABC):

@@ -3,11 +3,11 @@ import asyncio
 from argon2 import PasswordHasher
 
 from src.domain.models import User
-from src.service.abstract_service import AbstractService
-from src.service.abstract_unit_of_work import AbstractUnitOfWork
+from src.domain.user.commands import CreateUser, DeleteUser, UpdateUser
+from src.domain.user.events import UserCreated, UserDeleted, UserUpdated
+from src.service.abstracts.abstract_service import AbstractService
+from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service.exceptions import ItemNotFound
-from src.service.user.commands import CreateUser, DeleteUser, UpdateUser
-from src.service.user.events import UserCreated, UserDeleted, UserUpdated
 from src.service.user.exceptions import DuplicateUserByEmail, DuplicateUserByPhone
 
 

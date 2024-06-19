@@ -1,8 +1,8 @@
 from argon2 import PasswordHasher
 
 from src.service import unit_of_work, view
-from src.service.abstract_query_service import AbstractQueryService
-from src.service.abstract_service import AbstractService
+from src.service.abstracts.abstract_query_service import AbstractQueryService
+from src.service.abstracts.abstract_service import AbstractService
 from src.service.user.query_service import UserQueryService
 from src.service.user.repository import UserRepository
 from src.service.user.service import UserService
