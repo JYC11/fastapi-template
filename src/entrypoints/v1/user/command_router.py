@@ -18,7 +18,7 @@ user_command_router = APIRouter()
     response_model=UserOut,
     status_code=status.HTTP_201_CREATED,
 )
-async def create(
+async def create_user(
     message_bus: MessageBusDep,
     req: Annotated[UserCreateIn, Body()],
 ):
@@ -33,7 +33,7 @@ async def create(
     response_model=UserOut,
     status_code=status.HTTP_200_OK,
 )
-async def update(
+async def update_user(
     message_bus: MessageBusDep,
     user_id: Annotated[str, Path],
     req: Annotated[UserUpdateIn, Body()],
@@ -53,7 +53,7 @@ async def update(
     response_model=GenericResponse,
     status_code=status.HTTP_200_OK,
 )
-async def delete(
+async def delete_user(
     message_bus: MessageBusDep,
     user_id: Annotated[str, Path],
 ):

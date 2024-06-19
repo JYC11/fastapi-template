@@ -1,17 +1,19 @@
 import asyncio
 from typing import AsyncGenerator, Type
 
+import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_scoped_session, create_async_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
+from starlette.testclient import TestClient
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
-from src.service import unit_of_work
+from src.service import unit_of_work, view
 from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service.abstracts.abstract_view import AbstractView
 from src.service.failed_message_log.repository import FailedMessageLogRepository
-from src.service.message_bus import MessageBus, command_handlers, event_handlers
+from src.service.message_bus import MessageBus, command_handlers, event_handlers, get_message_bus
 from src.service.unit_of_work import SqlAlchemyUnitOfWork
 from src.service.view import SqlAlchemyView
 
@@ -72,7 +74,7 @@ def uow(session_factory) -> AbstractUnitOfWork:
 
 
 @pytest_asyncio.fixture(scope="function")
-def view(session_factory) -> AbstractView:
+def view_(session_factory) -> AbstractView:
     return SqlAlchemyView(
         session_factory=session_factory,
         repositories=dict(),
@@ -90,6 +92,17 @@ def monkeypatch_get_unit_of_work(monkeypatch, session_factory):
     monkeypatch.setattr(unit_of_work, "get_uow", get_test_uow)
 
 
+@pytest_asyncio.fixture(scope="function", autouse=True)
+def monkeypatch_get_view(monkeypatch, session_factory):
+    def get_test_view(repositories: dict[str, Type[AbstractRepository]]) -> AbstractView:
+        return SqlAlchemyView(
+            repositories=repositories,
+            session_factory=session_factory,
+        )
+
+    monkeypatch.setattr(view, "get_view", get_test_view)
+
+
 @pytest_asyncio.fixture(scope="function")
 def message_bus(uow: AbstractUnitOfWork) -> MessageBus:
     uow.repositories = dict(failed_message_log=FailedMessageLogRepository)
@@ -98,3 +111,14 @@ def message_bus(uow: AbstractUnitOfWork) -> MessageBus:
         event_handlers=event_handlers,
         command_handlers=command_handlers,
     )
+
+
+@pytest.fixture(scope="function")
+def client(message_bus: MessageBus):
+    from src.main import app
+
+    # dependency injection here
+    app.dependency_overrides[get_message_bus] = lambda: message_bus
+
+    with TestClient(app) as c:
+        yield c

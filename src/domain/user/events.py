@@ -1,10 +1,13 @@
 from src.domain import Event
 
 
-class UserCreated(Event): ...
+class UserCreated(Event):
+    id: str
 
 
-class UserUpdated(Event): ...
+class UserUpdated(Event):
+    id: str
 
 
-class UserDeleted(Event): ...
+class UserDeleted(Event):
+    id: str
