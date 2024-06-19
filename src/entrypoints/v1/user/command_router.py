@@ -8,19 +8,19 @@ from src.domain.user.commands import CreateUser, DeleteUser, UpdateUser
 from src.domain.user.dto import UserOut
 from src.entrypoints.depdencies import MessageBusDep
 from src.entrypoints.dto import GenericResponse
-from src.entrypoints.user.dto import UserCreateIn, UserUpdateIn
+from src.entrypoints.v1.user.dto import UserCreateIn, UserUpdateIn
 
-router = APIRouter()
+user_command_router = APIRouter()
 
 
-@router.post(
+@user_command_router.post(
     "/user",
     response_model=UserOut,
     status_code=status.HTTP_201_CREATED,
 )
 async def create(
     message_bus: MessageBusDep,
-    req: UserCreateIn = Body(...),
+    req: Annotated[UserCreateIn, Body()],
 ):
     cmd = CreateUser(email=req.email, phone=req.phone, password=req.password)
     res = await message_bus.handle(message=cmd)
@@ -28,7 +28,7 @@ async def create(
     return res.to_dto()
 
 
-@router.put(
+@user_command_router.put(
     "/user/{user_id}",
     response_model=UserOut,
     status_code=status.HTTP_200_OK,
@@ -36,7 +36,7 @@ async def create(
 async def update(
     message_bus: MessageBusDep,
     user_id: Annotated[str, Path],
-    req: UserUpdateIn = Body(...),
+    req: Annotated[UserUpdateIn, Body()],
 ):
     cmd = UpdateUser(
         id=user_id,
@@ -48,7 +48,7 @@ async def update(
     return res.to_dto()
 
 
-@router.delete(
+@user_command_router.delete(
     "/user/{user_id}",
     response_model=GenericResponse,
     status_code=status.HTTP_200_OK,

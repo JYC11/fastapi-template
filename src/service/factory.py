@@ -15,5 +15,5 @@ def get_user_service() -> AbstractService:
     )
 
 
-def get_user_view() -> AbstractQueryService:
+def get_user_query_service() -> AbstractQueryService:
     return UserQueryService(view=view.get_view(repositories=dict(user=UserRepository)))

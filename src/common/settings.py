@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     stage: Literal["LOCAL", "TEST", "DEV", "STAGE", "PROD"] = "LOCAL"
     is_ci: bool = False
     db_settings: DBSettings = DBSettings()
+    api_v1_str: str = "/api/v1"
 
 
 settings = Settings()

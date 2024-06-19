@@ -1,3 +1,6 @@
+# TODO add error messages
+
+
 class ItemNotFound(Exception): ...
 
 
