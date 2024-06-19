@@ -7,7 +7,7 @@ from nanoid import generate  # type: ignore
 
 @dataclass(repr=True, eq=False)
 class Base:
-    id: str = field(default=generate())
+    id: str = field(default_factory=generate)
     create_date: datetime = field(init=False, repr=True)
     update_date: datetime = field(init=False, repr=True)
 

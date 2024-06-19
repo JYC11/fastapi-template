@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class AbstractRepository(abc.ABC):
     def __init__(self, session: AsyncSession):
-        self.session: AsyncSession
+        self.session = session
 
     @abc.abstractmethod
     def _add(self, item: Any) -> None: ...
