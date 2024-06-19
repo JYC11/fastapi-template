@@ -1,6 +1,9 @@
 class ItemNotFound(Exception): ...
 
 
+class MethodNotFound(Exception): ...
+
+
 class Unauthorized(Exception): ...
 
 

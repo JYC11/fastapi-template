@@ -5,10 +5,11 @@ from typing_extensions import Callable
 
 from src.domain import Command, Event, Message
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
+from src.service.exceptions import MethodNotFound
 
 
 def method_not_found(message: Message):
-    return  # TODO raise exception
+    raise MethodNotFound
 
 
 class AbstractService(abc.ABC):

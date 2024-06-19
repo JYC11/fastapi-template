@@ -1,7 +1,6 @@
 import asyncio
 from typing import AsyncGenerator, Type
 
-import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_scoped_session, create_async_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
@@ -14,13 +13,12 @@ from src.service.failed_message_log.repository import FailedMessageLogRepository
 from src.service.message_bus import MessageBus, command_handlers, event_handlers
 from src.service.unit_of_work import SqlAlchemyUnitOfWork
 
-
 # DB STUFF FROM HERE
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+# @pytest.fixture(scope="session")
+# def event_loop():
+#     loop = asyncio.get_event_loop_policy().new_event_loop()
+#     yield loop
+#     loop.close()
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -53,9 +51,11 @@ async def session_factory(async_engine: AsyncEngine) -> AsyncGenerator[async_sco
         try:
             yield session_factory
         finally:
-            async with async_engine.connect() as conn:
-                async with conn.begin():
-                    await conn.run_sync(metadata.drop_all)
+            async with async_engine.connect() as _conn:
+                async with _conn.begin():
+                    for table in reversed(metadata.sorted_tables):
+                        await _conn.execute(table.delete())
+                    await _conn.commit()
 
 
 @pytest_asyncio.fixture(scope="function")

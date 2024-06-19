@@ -17,7 +17,7 @@ class AbstractUnitOfWork(abc.ABC):
         self.session: AsyncSession
         self.session_factory: sessionmaker
         self.repositories: dict[str, Type[AbstractRepository]]
-        self.events: deque[Message]
+        self.events: deque[Message] = deque()
         return self
 
     async def __aexit__(self, *args):
