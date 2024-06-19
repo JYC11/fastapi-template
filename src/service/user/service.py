@@ -35,7 +35,7 @@ class UserService(AbstractService):
             )
             self.uow.user.add(user)
             await self.uow.commit()
-            self.uow.events.appendleft(UserCreated())
+            self.uow.events.append(UserCreated())
             return user
 
     async def update(self, cmd: UpdateUser) -> User:
@@ -50,12 +50,12 @@ class UserService(AbstractService):
                 }
             )
             await self.uow.commit()
-            self.uow.events.appendleft(UserUpdated())
+            self.uow.events.append(UserUpdated())
             return user
 
     async def delete(self, cmd: DeleteUser) -> None:
         async with self.uow:
             await self.uow.user.remove(ident=cmd.id)
             await self.uow.commit()
-            self.uow.events.appendleft(UserDeleted())
+            self.uow.events.append(UserDeleted())
             return
