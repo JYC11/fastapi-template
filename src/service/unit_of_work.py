@@ -22,6 +22,8 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         self.repositories = repositories
         self.events: deque[Message] = deque()
         self.session_factory = session_factory
+        self.user: AbstractRepository | None = None  # type: ignore
+        self.failed_message_log: AbstractRepository | None = None  # type: ignore
 
     async def __aenter__(self) -> AbstractUnitOfWork:
         self.session: AsyncSession = self.session_factory()
@@ -40,6 +42,9 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         except StaleDataError:
             await self.session.rollback()
             raise exceptions.ConcurrencyException
+
+    async def _flush(self):
+        await self.session.flush()
 
     async def _rollback(self):
         await self.session.rollback()

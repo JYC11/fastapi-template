@@ -19,8 +19,8 @@ class UserService(AbstractService):
     async def create(self, cmd: CreateUser) -> User:
         async with self.uow:
             duplicate_user_by_email, duplicate_user_by_phone = await asyncio.gather(
-                self.uow.users.get_by(email__eq=cmd.email),
-                self.uow.users.get_by(phone__eq=cmd.phone),
+                self.uow.user.get_by(email__eq=cmd.email),
+                self.uow.user.get_by(phone__eq=cmd.phone),
             )
 
             if duplicate_user_by_email:
@@ -33,14 +33,14 @@ class UserService(AbstractService):
                 email=cmd.email,
                 password=self.hasher.hash(cmd.password),
             )
-            self.uow.users.add(user)
+            self.uow.user.add(user)
             await self.uow.commit()
             self.uow.events.appendleft(UserCreated())
             return user
 
     async def update(self, cmd: UpdateUser) -> User:
         async with self.uow:
-            user: User | None = await self.uow.users.get(ident=cmd.id)
+            user: User | None = await self.uow.user.get(ident=cmd.id)
             if not user:
                 raise ItemNotFound()
             user.update(
@@ -55,7 +55,7 @@ class UserService(AbstractService):
 
     async def delete(self, cmd: DeleteUser) -> None:
         async with self.uow:
-            await self.uow.users.remove(ident=cmd.id)
+            await self.uow.user.remove(ident=cmd.id)
             await self.uow.commit()
             self.uow.events.appendleft(UserDeleted())
             return
