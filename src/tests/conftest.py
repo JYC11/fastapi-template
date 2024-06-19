@@ -9,9 +9,11 @@ from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
 from src.service import unit_of_work
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
+from src.service.abstract_view import AbstractView
 from src.service.failed_message_log.repository import FailedMessageLogRepository
 from src.service.message_bus import MessageBus, command_handlers, event_handlers
 from src.service.unit_of_work import SqlAlchemyUnitOfWork
+from src.service.view import SqlAlchemyView
 
 # DB STUFF FROM HERE
 # @pytest.fixture(scope="session")
@@ -23,11 +25,7 @@ from src.service.unit_of_work import SqlAlchemyUnitOfWork
 
 @pytest_asyncio.fixture(scope="session")
 async def async_engine() -> AsyncGenerator[AsyncEngine, None]:
-    engine = create_async_engine(
-        "sqlite+aiosqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        future=True,
-    )
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:", connect_args={"check_same_thread": False}, future=True)
     async with engine.connect() as conn:
         async with conn.begin():
             await conn.run_sync(metadata.drop_all)
@@ -67,11 +65,18 @@ async def session(session_factory):
 # DEPENDENCIES AND FAKE DEPENDENCIES
 @pytest_asyncio.fixture(scope="function")
 def uow(session_factory) -> AbstractUnitOfWork:
-    uow = SqlAlchemyUnitOfWork(
+    return SqlAlchemyUnitOfWork(
         session_factory=session_factory,
         repositories=dict(),
     )
-    return uow
+
+
+@pytest_asyncio.fixture(scope="function")
+def view(session_factory) -> AbstractView:
+    return SqlAlchemyView(
+        session_factory=session_factory,
+        repositories=dict(),
+    )
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)

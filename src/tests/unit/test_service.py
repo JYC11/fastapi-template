@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from src.domain import Command, Event
@@ -6,10 +8,11 @@ from src.service.exceptions import MethodNotFound
 
 
 class ExampleService(AbstractService):
-    def create_something(self, command: Command) -> str:
+
+    def sync_create(self, command: Command) -> str:
         return "something1"
 
-    async def async_create_something(self, command: Command) -> str:
+    async def create(self, command: Command) -> str:
         return "something2"
 
     def do_something_else(self, event: Event):
@@ -17,6 +20,12 @@ class ExampleService(AbstractService):
 
     async def async_do_something_else(self, event: Event):
         print("event handled 2")
+
+    async def update(self, cmd: Any):
+        pass
+
+    async def delete(self, cmd: Any):
+        pass
 
 
 @pytest.mark.asyncio
@@ -51,7 +60,7 @@ async def test_handles_sync_command_correctly():
     service = ExampleService()
 
     # WHEN
-    res = await service.handle_command(command=Command(), method_name="create_something")
+    res = await service.handle_command(command=Command(), method_name="sync_create")
 
     # THEN
     assert res == "something1"
@@ -63,7 +72,7 @@ async def test_handles_async_command_correctly():
     service = ExampleService()
 
     # WHEN
-    res = await service.handle_command(command=Command(), method_name="async_create_something")
+    res = await service.handle_command(command=Command(), method_name="create")
 
     # THEN
     assert res == "something2"

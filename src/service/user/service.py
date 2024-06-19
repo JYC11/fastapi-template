@@ -12,7 +12,11 @@ from src.service.user.exceptions import DuplicateUserByEmail, DuplicateUserByPho
 
 
 class UserService(AbstractService):
-    def __init__(self, uow: AbstractUnitOfWork, hasher: PasswordHasher):
+    def __init__(
+        self,
+        uow: AbstractUnitOfWork,
+        hasher: PasswordHasher,
+    ):
         self.uow = uow
         self.hasher = hasher
 

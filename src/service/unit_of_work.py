@@ -10,14 +10,14 @@ from src.domain import Message
 from src.service import exceptions
 from src.service.abstract_unit_of_work import AbstractUnitOfWork
 
-DEFAULT_TRANSACTIONAL_FACTORY = async_transactional_session_factory
+DEFAULT_TRANSACTIONAL_SESSION_FACTORY = async_transactional_session_factory
 
 
 class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
     def __init__(
         self,
         repositories: dict[str, Type[AbstractRepository]],
-        session_factory=DEFAULT_TRANSACTIONAL_FACTORY,
+        session_factory=DEFAULT_TRANSACTIONAL_SESSION_FACTORY,
     ):
         self.repositories = repositories
         self.events: deque[Message] = deque()

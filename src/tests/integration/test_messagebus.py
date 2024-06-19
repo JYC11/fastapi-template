@@ -1,4 +1,4 @@
-from typing import Callable, Type
+from typing import Any, Callable, Type
 
 import pytest
 from sqlalchemy.ext.asyncio import async_scoped_session
@@ -28,7 +28,7 @@ class ExampleService(AbstractService):
     def __init__(self, uow: AbstractUnitOfWork):
         self.uow = uow
 
-    def create_something(self, command: CreateSomething) -> str:
+    async def create(self, command: CreateSomething) -> str:
         self.uow.events.append(SomethingCreated(message="wow"))
         return "something"
 
@@ -37,6 +37,12 @@ class ExampleService(AbstractService):
 
     def raise_exception(self, command: RaiseException):
         raise ExampleException()
+
+    async def update(self, cmd: Any):
+        pass
+
+    async def delete(self, cmd: Any):
+        pass
 
 
 class fake_async_scoped_session(async_scoped_session):
@@ -57,7 +63,7 @@ event_handlers: dict[Type[Event], list[tuple[Callable[..., AbstractService], str
 }
 
 command_handlers: dict[Type[Command], tuple[Callable[..., AbstractService], str]] = {
-    CreateSomething: (get_example_service, "create_something"),
+    CreateSomething: (get_example_service, "create"),
     RaiseException: (get_example_service, "raise_exception"),
 }
 

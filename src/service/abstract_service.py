@@ -1,5 +1,6 @@
 import abc
 import inspect
+from typing import Any
 
 from typing_extensions import Callable
 
@@ -29,3 +30,15 @@ class AbstractService(abc.ABC):
         task = func(event)  # type: ignore
         if inspect.isawaitable(task):
             await task
+
+    @abc.abstractmethod
+    async def create(self, cmd: Any) -> Any:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def update(self, cmd: Any) -> Any:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def delete(self, cmd: Any) -> Any:
+        raise NotImplementedError
