@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from starlette import status
 from starlette.responses import JSONResponse
@@ -61,3 +62,7 @@ async def exception_handler(request: Request, call_next):
 
 
 app.include_router(api_v1_router)
+
+
+if __name__ == "__main__":
+    uvicorn.run("src.main:app", port=8000, reload=True)
