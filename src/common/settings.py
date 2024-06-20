@@ -50,7 +50,7 @@ class JWTSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    stage: Literal["LOCAL", "TEST", "DEV", "STAGE", "PROD"] = config("STAGE")
+    stage: Literal["LOCAL", "TEST", "DEV", "STAGE", "PROD"] = "TEST" if "pytest" in sys.modules else config("STAGE")
     is_ci: bool = False
     db_settings: DBSettings = DBSettings()
     jwt_settings: JWTSettings = JWTSettings()
@@ -58,6 +58,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-if "pytest" in sys.modules:
-    settings.stage = "TEST"
