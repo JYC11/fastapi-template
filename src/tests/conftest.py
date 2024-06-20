@@ -9,13 +9,13 @@ from starlette.testclient import TestClient
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
-from src.service import unit_of_work, view
-from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
-from src.service.abstracts.abstract_view import AbstractView
-from src.service.failed_message_log.repository import FailedMessageLogRepository
-from src.service.message_bus import MessageBus, command_handlers, event_handlers, get_message_bus
-from src.service.unit_of_work import SqlAlchemyUnitOfWork
-from src.service.view import SqlAlchemyView
+from src.service_layer import unit_of_work, view
+from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
+from src.service_layer.abstracts.abstract_view import AbstractView
+from src.service_layer.failed_message_log.repository import FailedMessageLogRepository
+from src.service_layer.message_bus import MessageBus, command_handlers, event_handlers, get_message_bus
+from src.service_layer.unit_of_work import SqlAlchemyUnitOfWork
+from src.service_layer.view import SqlAlchemyView
 
 # DB STUFF FROM HERE
 # @pytest.fixture(scope="session")

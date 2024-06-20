@@ -5,13 +5,16 @@ from argon2 import PasswordHasher
 from src.domain.models import User
 from src.domain.user.commands import CreateUser, DeleteUser, UpdateUser
 from src.domain.user.events import UserCreated, UserDeleted, UserUpdated
-from src.service.abstracts.abstract_service import AbstractService
-from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
-from src.service.exceptions import ItemNotFound
-from src.service.user.exceptions import DuplicateUserByEmail, DuplicateUserByPhone
+from src.service_layer.abstracts.abstract_service import AbstractService
+from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
+from src.service_layer.exceptions import ItemNotFound
+from src.service_layer.user.exceptions import DuplicateUserByEmail, DuplicateUserByPhone
+from src.utils.log_utils import logging_decorator
+
+LOG_PATH = "src.service_layer.user.command_service.UserCommandService"
 
 
-class UserService(AbstractService):
+class UserCommandService(AbstractService):
     def __init__(
         self,
         uow: AbstractUnitOfWork,
@@ -20,6 +23,7 @@ class UserService(AbstractService):
         self.uow = uow
         self.hasher = hasher
 
+    @logging_decorator(LOG_PATH)
     async def create(self, cmd: CreateUser) -> User:
         async with self.uow:
             duplicate_user_by_email, duplicate_user_by_phone = await asyncio.gather(
@@ -42,6 +46,7 @@ class UserService(AbstractService):
             self.uow.events.append(UserCreated(id=user.id))
             return user
 
+    @logging_decorator(LOG_PATH)
     async def update(self, cmd: UpdateUser) -> User:
         async with self.uow:
             user: User | None = await self.uow.user.get(ident=cmd.id)
@@ -57,6 +62,7 @@ class UserService(AbstractService):
             self.uow.events.append(UserUpdated(id=user.id))
             return user
 
+    @logging_decorator(LOG_PATH)
     async def delete(self, cmd: DeleteUser) -> None:
         async with self.uow:
             await self.uow.user.remove(ident=cmd.id)

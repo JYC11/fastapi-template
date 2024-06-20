@@ -5,10 +5,10 @@ from sqlalchemy.ext.asyncio import async_scoped_session
 
 from src.domain import Command, Event
 from src.domain.models import FailedMessageLog
-from src.service.abstracts.abstract_service import AbstractService
-from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
-from src.service.message_bus import MessageBus
-from src.service.unit_of_work import SqlAlchemyUnitOfWork
+from src.service_layer.abstracts.abstract_service import AbstractService
+from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
+from src.service_layer.message_bus import MessageBus
+from src.service_layer.unit_of_work import SqlAlchemyUnitOfWork
 
 
 class CreateSomething(Command): ...

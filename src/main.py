@@ -5,7 +5,7 @@ from starlette.responses import JSONResponse
 
 from src.common.settings import settings
 from src.entrypoints.v1.router import api_v1_router
-from src.service import exceptions as service_exceptions
+from src.service_layer import exceptions as service_exceptions
 
 app = FastAPI(
     title="template",

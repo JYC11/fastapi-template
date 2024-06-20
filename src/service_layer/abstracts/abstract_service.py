@@ -5,8 +5,8 @@ from typing import Any
 from typing_extensions import Callable
 
 from src.domain import Command, Event, Message
-from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
-from src.service.exceptions import MethodNotFound
+from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
+from src.service_layer.exceptions import MethodNotFound
 
 
 def method_not_found(message: Message):

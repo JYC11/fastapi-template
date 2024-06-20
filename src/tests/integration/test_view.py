@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from src.domain.models import User
-from src.service.abstracts.abstract_view import AbstractView
-from src.service.user.repository import UserRepository
+from src.service_layer.abstracts.abstract_view import AbstractView
+from src.service_layer.user.repository import UserRepository
 
 
 @pytest.mark.asyncio

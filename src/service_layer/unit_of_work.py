@@ -7,8 +7,8 @@ from sqlalchemy.orm.exc import StaleDataError
 from src.adapters.abstract_repository import AbstractRepository
 from src.common.db import async_transactional_session_factory
 from src.domain import Message
-from src.service import exceptions
-from src.service.abstracts.abstract_unit_of_work import AbstractUnitOfWork
+from src.service_layer import exceptions
+from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 
 DEFAULT_TRANSACTIONAL_SESSION_FACTORY = async_transactional_session_factory
 

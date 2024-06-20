@@ -3,8 +3,8 @@ from typing import Any
 import pytest
 
 from src.domain import Command, Event
-from src.service.abstracts.abstract_service import AbstractService
-from src.service.exceptions import MethodNotFound
+from src.service_layer.abstracts.abstract_service import AbstractService
+from src.service_layer.exceptions import MethodNotFound
 
 
 class ExampleService(AbstractService):
