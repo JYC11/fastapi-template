@@ -1,7 +1,8 @@
 from typing import Any, Type
 
-from sqlalchemy import text
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql import Select
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.common.db import async_autocommit_session_factory
@@ -45,6 +46,26 @@ class SqlAlchemyView(AbstractView):
             if scalars:
                 return execution.scalars().all()
             return execution.all()
+
+    async def _paginate(
+        self,
+        query: Select,
+        filters: list[Any],
+        ordering: list[Any],
+        offset: int,
+        size: int,
+        scalars: bool,
+    ):
+        if filters:
+            query = query.where(*filters)
+        if ordering:
+            query = query.order_by(*ordering)
+        query = query.offset(offset).limit(size)
+        return await self.execute(query=query, scalars=scalars, one=False)
+
+    async def _get_count(self, query: Select, filters: list) -> int:
+        count_query = select(func.count()).select_from(query.where(*filters).subquery())
+        return await self.execute(query=count_query, scalars=True, one=True)
 
 
 def get_view(repositories: dict[str, Type[AbstractRepository]]) -> AbstractView:

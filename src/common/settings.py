@@ -1,11 +1,11 @@
 import sys
 from base64 import b64encode
 from datetime import timedelta
+from typing import Literal
 
 from decouple import config  # type: ignore
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings
-from typing_extensions import Literal
 
 if not config("STAGE"):
     raise Exception("STAGE is not defined")
@@ -50,7 +50,7 @@ class JWTSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    stage: Literal["LOCAL", "TEST", "DEV", "STAGE", "PROD"] = "TEST" if "pytest" in sys.modules else config("STAGE")
+    stage: Literal["LOCAL", "TEST", "DEV", "STAGE", "PROD"] = config("STAGE")
     is_ci: bool = False
     db_settings: DBSettings = DBSettings()
     jwt_settings: JWTSettings = JWTSettings()
@@ -58,3 +58,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+if "pytest" in sys.modules:
+    settings.stage = "TEST"

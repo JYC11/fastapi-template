@@ -1,6 +1,7 @@
 import abc
 from typing import Any
 
+from src.entrypoints.dto import PaginationParams
 from src.service_layer.abstracts.abstract_view import AbstractView
 
 
@@ -20,5 +21,5 @@ class AbstractQueryService(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_all(self, *args, **kwargs) -> Any | None:
+    async def paginate(self, req: Any, pagination_params: PaginationParams) -> Any | None:
         raise NotImplementedError

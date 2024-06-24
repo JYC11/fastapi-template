@@ -1,6 +1,7 @@
 from collections import deque
-from typing import Type
+from typing import Any, Type
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import StaleDataError
 
@@ -34,6 +35,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         return await super().__aenter__()
 
     async def __aexit__(self, *args):
+        await self.rollback()
         await self.session.close()
 
     async def _commit(self):
@@ -45,6 +47,21 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
 
     async def _flush(self):
         await self.session.flush()
+
+    async def _execute(self, query: Any, scalars: bool, one: bool):
+        if isinstance(query, str):
+            query = text(query)
+        execution = await self.session.execute(query)
+        if not scalars and not one:
+            return
+        if one:
+            if scalars:
+                return execution.scalar_one_or_none()
+            return execution.one_or_none()
+        else:
+            if scalars:
+                return execution.scalars().all()
+            return execution.all()
 
     async def _rollback(self):
         await self.session.rollback()

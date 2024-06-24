@@ -1,4 +1,6 @@
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from src.domain.models import User
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
@@ -6,7 +8,7 @@ from src.service_layer.user.repository import UserRepository
 
 
 @pytest.mark.asyncio
-async def test_can_get_record_and_update_it(uow: AbstractUnitOfWork):
+async def test_can_get_record_and_update_it(uow: AbstractUnitOfWork, session: AsyncSession):
     # GIVEN
     uow.repositories = dict(user=UserRepository)
     async with uow:
@@ -24,10 +26,11 @@ async def test_can_get_record_and_update_it(uow: AbstractUnitOfWork):
         found_user.phone = new_phone
         await uow.commit()
 
-        # THEN
-        found_again: User | None = await uow.user.get_by(email__eq=email)
-        assert found_again is not None
-        assert found_again.phone == new_phone
+    # THEN
+    execution = await session.execute(select(User).where(User.email == email))
+    user: User | None = execution.scalar_one_or_none()
+    assert True
+    assert user.phone == new_phone
 
 
 @pytest.mark.asyncio

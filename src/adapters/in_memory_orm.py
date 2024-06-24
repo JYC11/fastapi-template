@@ -18,14 +18,14 @@ user = sa.Table(
         unique=True,
     ),
     sa.Column(
-        "create_dt",
+        "create_date",
         sqlite.TIMESTAMP(timezone=True),
         default=sa.func.now(),
         server_default=sa.func.now(),
         nullable=False,
     ),
     sa.Column(
-        "update_dt",
+        "update_date",
         sqlite.TIMESTAMP(timezone=True),
         onupdate=sa.func.current_timestamp(),
     ),
@@ -45,14 +45,14 @@ failed_message_log = sa.Table(
         unique=True,
     ),
     sa.Column(
-        "create_dt",
+        "create_date",
         sqlite.TIMESTAMP(timezone=True),
         default=sa.func.now(),
         server_default=sa.func.now(),
         nullable=False,
     ),
     sa.Column(
-        "update_dt",
+        "update_date",
         sqlite.TIMESTAMP(timezone=True),
         onupdate=sa.func.current_timestamp(),
     ),

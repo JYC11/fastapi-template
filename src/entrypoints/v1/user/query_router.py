@@ -15,6 +15,9 @@ user_query_router = APIRouter()
     response_model=UserOut,
     status_code=status.HTTP_200_OK,
 )
-async def get_one_user(user_id: Annotated[str, Path], query_service: UserQueryServiceDep):
+async def get_one_user(
+    user_id: Annotated[str, Path],
+    query_service: UserQueryServiceDep,
+):
     user: User = await query_service.get_one_or_raise(ident=user_id)
     return user.to_dto()

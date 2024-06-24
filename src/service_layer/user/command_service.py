@@ -4,6 +4,7 @@ from argon2 import PasswordHasher
 
 from src.domain.models import User
 from src.domain.user.commands import CreateUser, DeleteUser, UpdateUser
+from src.domain.user.dto import UserOut
 from src.domain.user.events import UserCreated, UserDeleted, UserUpdated
 from src.service_layer.abstracts.abstract_service import AbstractService
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
@@ -24,7 +25,7 @@ class UserCommandService(AbstractService):
         self.hasher = hasher
 
     @logging_decorator(LOG_PATH)
-    async def create(self, cmd: CreateUser) -> User:
+    async def create(self, cmd: CreateUser) -> UserOut:
         async with self.uow:
             duplicate_user_by_email, duplicate_user_by_phone = await asyncio.gather(
                 self.uow.user.get_by(email__eq=cmd.email),
@@ -44,10 +45,10 @@ class UserCommandService(AbstractService):
             self.uow.user.add(user)
             await self.uow.commit()
             self.uow.events.append(UserCreated(id=user.id))
-            return user
+            return user.to_dto()
 
     @logging_decorator(LOG_PATH)
-    async def update(self, cmd: UpdateUser) -> User:
+    async def update(self, cmd: UpdateUser) -> UserOut:
         async with self.uow:
             user: User | None = await self.uow.user.get(ident=cmd.id)
             if not user:
@@ -59,8 +60,9 @@ class UserCommandService(AbstractService):
                 }
             )
             await self.uow.commit()
+            await self.uow.refresh(user)
             self.uow.events.append(UserUpdated(id=user.id))
-            return user
+            return user.to_dto()
 
     @logging_decorator(LOG_PATH)
     async def delete(self, cmd: DeleteUser) -> None:

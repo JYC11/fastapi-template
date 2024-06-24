@@ -4,6 +4,7 @@ from typing import Any, Type
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import Select
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.domain import Message
@@ -29,6 +30,13 @@ class AbstractUnitOfWork(abc.ABC):
     async def flush(self):
         await self._flush()
 
+    async def execute(self, query: str | Select, scalars: bool, one: bool):
+        return await self._execute(
+            query=query,
+            scalars=scalars,
+            one=one,
+        )
+
     async def rollback(self):
         await self._rollback()
 
@@ -41,6 +49,10 @@ class AbstractUnitOfWork(abc.ABC):
 
     @abc.abstractmethod
     async def _flush(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def _execute(self, query: str | Select, scalars: bool, one: bool):
         raise NotImplementedError
 
     @abc.abstractmethod

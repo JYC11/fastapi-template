@@ -9,3 +9,8 @@ class UserOut(BaseModel):
     update_date: datetime | None
     phone: str
     email: str
+
+
+class UserPaginationParams(BaseModel):
+    phone: str | None
+    email: str | None
