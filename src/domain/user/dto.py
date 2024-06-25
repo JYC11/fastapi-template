@@ -11,6 +11,6 @@ class UserOut(BaseModel):
     email: str
 
 
-class UserPaginationParams(BaseModel):
+class UserSearchParams(BaseModel):
     phone: str | None
     email: str | None

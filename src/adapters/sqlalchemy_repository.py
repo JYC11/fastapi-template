@@ -11,7 +11,7 @@ T = TypeVar("T", bound=object)
 
 
 # TODO: add way of doing joins?
-class SqlAlchemyRepository[T](AbstractRepository):  # type: ignore
+class SqlAlchemyRepository(AbstractRepository):  # type: ignore
     def __init__(self, session: AsyncSession, model: Type[T]):
         super().__init__(session)
         self.model = model

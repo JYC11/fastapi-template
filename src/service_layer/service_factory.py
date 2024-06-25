@@ -1,4 +1,4 @@
-from argon2 import PasswordHasher
+from argon2 import PasswordHasher  # type: ignore
 
 from src.service_layer import unit_of_work, view
 from src.service_layer.abstracts.abstract_query_service import AbstractQueryService

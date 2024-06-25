@@ -1,6 +1,6 @@
 import asyncio
 
-from argon2 import PasswordHasher
+from argon2 import PasswordHasher  # type: ignore
 
 from src.domain.models import User
 from src.domain.user.commands import CreateUser, DeleteUser, UpdateUser

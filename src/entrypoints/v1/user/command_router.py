@@ -14,7 +14,7 @@ user_command_router = APIRouter()
 
 
 @user_command_router.post(
-    "/user",
+    "/users",
     response_model=UserOut,
     status_code=status.HTTP_201_CREATED,
 )
@@ -29,7 +29,7 @@ async def create_user(
 
 
 @user_command_router.put(
-    "/user/{user_id}",
+    "/users/{user_id}",
     response_model=UserOut,
     status_code=status.HTTP_200_OK,
 )
@@ -49,7 +49,7 @@ async def update_user(
 
 
 @user_command_router.delete(
-    "/user/{user_id}",
+    "/users/{user_id}",
     response_model=GenericResponse,
     status_code=status.HTTP_200_OK,
 )

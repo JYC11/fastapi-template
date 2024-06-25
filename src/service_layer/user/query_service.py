@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import select
 
 from src.domain.models import User
-from src.domain.user.dto import UserOut, UserPaginationParams
+from src.domain.user.dto import UserOut, UserSearchParams
 from src.entrypoints.dto import PaginationParams
 from src.service_layer.abstracts.abstract_query_service import AbstractQueryService
 from src.service_layer.abstracts.abstract_view import AbstractView
@@ -35,16 +35,16 @@ class UserQueryService(AbstractQueryService):
 
     @logging_decorator(LOG_PATH)
     async def paginate(
-        self, req: UserPaginationParams, pagination_params: PaginationParams
+        self, search_params: UserSearchParams, pagination_params: PaginationParams
     ) -> tuple[list[UserOut], int]:
         async with self.view:
             query = select(User)
 
             filters: list[Any] = []
-            if req.phone is not None:
-                filters.append(User.email.like(f"%{req.phone}%"))  # type: ignore
-            if req.email is not None:
-                filters.append(User.email.like(f"%{req.email}%"))  # type: ignore
+            if search_params.phone is not None:
+                filters.append(User.email.like(f"%{search_params.phone}%"))  # type: ignore
+            if search_params.email is not None:
+                filters.append(User.email.like(f"%{search_params.email}%"))  # type: ignore
 
             total = await self.view.get_count(query=query, filters=filters)
             if total == 0:
