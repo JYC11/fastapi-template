@@ -28,7 +28,7 @@ async def create_user(
     return res.to_dto()
 
 
-@user_command_router.put(
+@user_command_router.patch(
     "/users/{user_id}",
     response_model=UserOut,
     status_code=status.HTTP_200_OK,

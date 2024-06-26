@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Literal
 
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 from nanoid import generate  # type: ignore
 
 from src.domain.user.dto import UserOut
@@ -47,6 +49,16 @@ class User(Base):
     phone: str = field(default="")
     email: str = field(default="")
     password: str = field(default="")
+
+    @classmethod
+    def create(cls, phone: str, email: str, password: str, hasher: PasswordHasher) -> "User":
+        return cls(phone=phone, email=email, password=hasher.hash(password))
+
+    def verify(self, password: str, hasher: PasswordHasher) -> bool:
+        try:
+            return hasher.verify(hash=self.password, password=password)
+        except VerifyMismatchError:
+            return False
 
     def to_dto(self):
         return UserOut(

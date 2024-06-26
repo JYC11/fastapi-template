@@ -37,10 +37,11 @@ class UserCommandService(AbstractService):
             if duplicate_user_by_phone:
                 raise DuplicateUserByPhone()
 
-            user = User(
+            user = User.create(
                 phone=cmd.phone,
                 email=cmd.email,
-                password=self.hasher.hash(cmd.password),
+                password=cmd.password,
+                hasher=self.hasher,
             )
             self.uow.user.add(user)
             await self.uow.commit()
