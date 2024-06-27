@@ -6,6 +6,9 @@ from src.common.security import InvalidToken, Token, TokenExpired, create_jwt_to
 from src.domain.models import User
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service_layer.exceptions import Forbidden, Unauthorized
+from src.utils.log_utils import logging_decorator
+
+LOG_PATH = "src.service_layer.user.command_service.AuthService"
 
 
 class AuthService:
@@ -18,6 +21,7 @@ class AuthService:
         self.uow = uow
         self.hasher = hasher
 
+    @logging_decorator(LOG_PATH)
     async def login(self, email: str, password: str) -> tuple[str, str]:
         async with self.uow:
             user: User | None = await self.uow.user.get_by(email__eq=email)
@@ -39,6 +43,7 @@ class AuthService:
 
             return token, refresh_token
 
+    @logging_decorator(LOG_PATH)
     async def refresh(self, refresh_token: str, grant_type: Literal["refresh_token"]):
         async with self.uow:
             if grant_type != "refresh_token":

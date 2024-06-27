@@ -1,14 +1,16 @@
 import asyncio
-from typing import AsyncGenerator, Type
+from typing import AsyncGenerator, Generator, Type
 
 import pytest
 import pytest_asyncio
+from fastapi.applications import FastAPI
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_scoped_session, create_async_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
 from starlette.testclient import TestClient
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
+from src.main import app
 from src.service_layer import unit_of_work, view
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service_layer.abstracts.abstract_view import AbstractView
@@ -115,10 +117,23 @@ def message_bus(uow: AbstractUnitOfWork) -> MessageBus:
 
 @pytest.fixture(scope="function")
 def client(message_bus: MessageBus):
-    from src.main import app
 
     # dependency injection here
     app.dependency_overrides[get_message_bus] = lambda: message_bus
 
     with TestClient(app) as c:
         yield c
+
+
+@pytest.fixture
+def app_for_test(message_bus: MessageBus) -> Generator[FastAPI, None, None]:
+    # dependency overrides here
+    app.dependency_overrides[get_message_bus] = lambda: message_bus
+
+    yield app
+
+
+# DATA
+@pytest_asyncio.fixture
+def user_data():
+    return {"email": "test@email.com", "phone": "01011112222", "password": "secret"}

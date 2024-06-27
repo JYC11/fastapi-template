@@ -13,10 +13,6 @@ class AbstractQueryService(abc.ABC):
         self.view = view
 
     @abc.abstractmethod
-    async def get_one(self, ident: Any) -> Any | None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
     async def get_one_or_raise(self, ident: Any) -> Any | None:
         raise NotImplementedError
 

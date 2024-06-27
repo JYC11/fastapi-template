@@ -18,20 +18,12 @@ class UserQueryService(AbstractQueryService):
         super().__init__(view)
 
     @logging_decorator(LOG_PATH)
-    async def get_one(self, ident: str) -> UserOut | None:
+    async def get_one_or_raise(self, ident: str) -> UserOut:
         async with self.view:
             user: User | None = await self.view.user.get(ident=ident)
             if not user:
-                return None
-            return user.to_dto()
-
-    @logging_decorator(LOG_PATH)
-    async def get_one_or_raise(self, ident: str) -> UserOut:
-        async with self.view:
-            user: UserOut | None = await self.view.user.get(ident=ident)
-            if not user:
                 raise ItemNotFound
-            return user
+            return user.to_dto()
 
     @logging_decorator(LOG_PATH)
     async def paginate(
