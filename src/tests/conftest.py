@@ -1,15 +1,21 @@
 import asyncio
+from datetime import timedelta
 from typing import AsyncGenerator, Generator, Type
 
 import pytest
 import pytest_asyncio
+from decouple import config  # type: ignore
 from fastapi.applications import FastAPI
+from pydantic.types import SecretStr
+from pydantic_settings import BaseSettings
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_scoped_session, create_async_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
 from starlette.testclient import TestClient
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
+from src.common import security
+from src.common.settings import settings
 from src.main import app
 from src.service_layer import unit_of_work, view
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
@@ -137,3 +143,45 @@ def app_for_test(message_bus: MessageBus) -> Generator[FastAPI, None, None]:
 @pytest_asyncio.fixture
 def user_data():
     return {"email": "test@email.com", "phone": "01011112222", "password": "secret"}
+
+
+@pytest_asyncio.fixture
+def monkeypatch_jwt_settings(monkeypatch):
+    class FakeJwtSettings(BaseSettings):
+        raw_secret_key: SecretStr = SecretStr(config("RAW_SECRET_KEY"))
+        public_key: str | None = None
+        private_key: str | None = None
+        algorithm: str = "HS256"
+        authorization_type: str = "Bearer"
+        verify: bool = True
+        verify_expiration: bool = True
+        expiration_delta: timedelta = timedelta(seconds=0)
+        refresh_expiration_delta: timedelta = timedelta(seconds=0)
+        allow_refresh: bool = True
+        access_toke_expire_minutes: int = 60 * 24 * 8
+
+    fake_jwt_settings = FakeJwtSettings()
+
+    monkeypatch.setattr(settings, "jwt_settings", fake_jwt_settings)
+
+
+@pytest_asyncio.fixture
+def monkeypatch_create_jwt_token_invalid_token(monkeypatch):
+    monkeypatch.setattr(security, "create_jwt_token", lambda: "token")
+
+
+@pytest_asyncio.fixture
+def monkeypatch_validate_jwt_token_invalid_token(monkeypatch):
+
+    def raise_exception():
+        raise security.InvalidToken
+
+    monkeypatch.setattr(security, "validate_jwt_token", raise_exception)
+
+
+@pytest_asyncio.fixture
+def monkeypatch_validate_jwt_token_expired_token(monkeypatch):
+    def raise_exception():
+        raise security.TokenExpired
+
+    monkeypatch.setattr(security, "validate_jwt_token", raise_exception)

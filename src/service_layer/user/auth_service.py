@@ -2,7 +2,7 @@ from typing import Literal
 
 from argon2 import PasswordHasher
 
-from src.common.security import InvalidToken, Token, TokenExpired, create_jwt_token, validate_jwt_token
+from src.common import security
 from src.domain.models import User
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service_layer.exceptions import Forbidden, Unauthorized
@@ -37,9 +37,17 @@ class AuthService:
 
             private_claims = {"email": user.email, "phone": user.phone}
 
-            token = create_jwt_token(subject=str(user.id), private_claims=private_claims, refresh=False)
+            token = security.create_jwt_token(
+                subject=user.id,
+                private_claims=private_claims,
+                refresh=False,
+            )
 
-            refresh_token = create_jwt_token(subject=str(user.id), private_claims=private_claims, refresh=True)
+            refresh_token = security.create_jwt_token(
+                subject=user.id,
+                private_claims=private_claims,
+                refresh=True,
+            )
 
             return token, refresh_token
 
@@ -50,10 +58,10 @@ class AuthService:
                 raise Forbidden("incorrect grant type")
 
             try:
-                decoded: Token = validate_jwt_token(token=refresh_token)
-            except TokenExpired as e:
+                decoded: security.Token = security.validate_jwt_token(token=refresh_token)
+            except security.TokenExpired as e:
                 raise Forbidden(str(e))
-            except InvalidToken as e:
+            except security.InvalidToken as e:
                 raise Forbidden(str(e))
 
             id = decoded.sub
@@ -61,7 +69,7 @@ class AuthService:
             if not user:
                 raise Forbidden(f"user with {id} not found")
 
-            return create_jwt_token(
+            return security.create_jwt_token(
                 subject=user.id,
                 private_claims={
                     "email": user.email,
