@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from src.domain.user.dto import UserOut
@@ -17,3 +19,17 @@ class UserUpdateIn(BaseModel):
 
 class UserPaginatedOut(PaginationOut):
     items: list[UserOut] = Field(...)
+
+
+class LoginSuccess(BaseModel):
+    token: str = Field(...)
+    refresh_token: str = Field(...)
+
+
+class RefreshRequest(BaseModel):
+    grant_type: Literal["refresh_token"] = Field(...)
+    refresh_token: str = Field(...)
+
+
+class RefreshSuccess(BaseModel):
+    token: str = Field(...)

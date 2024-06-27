@@ -8,7 +8,11 @@ source venv/bin/activate
 deactivate
 ```
 
+
+# DOING
+* Security(Authentication)
+* TESTS TESTS TESTS
+
 # TODO
-1. Security
-2. IAM features
-3. Job store and job executor
+1. IAM features(Authorization)
+2. Job store and job executor

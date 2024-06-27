@@ -52,13 +52,16 @@ class User(Base):
 
     @classmethod
     def create(cls, phone: str, email: str, password: str, hasher: PasswordHasher) -> "User":
-        return cls(phone=phone, email=email, password=hasher.hash(password))
+        return cls(phone=phone, email=email, password=hasher.hash(password=password))
 
     def verify(self, password: str, hasher: PasswordHasher) -> bool:
         try:
             return hasher.verify(hash=self.password, password=password)
         except VerifyMismatchError:
             return False
+
+    def update_password(self, password: str, hasher: PasswordHasher):
+        self.password = hasher.hash(password=password)
 
     def to_dto(self):
         return UserOut(
