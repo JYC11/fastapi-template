@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UserOut(BaseModel):
@@ -12,5 +12,5 @@ class UserOut(BaseModel):
 
 
 class UserSearchParams(BaseModel):
-    phone: str | None
-    email: str | None
+    phone: str | None = Field(None)
+    email: str | None = Field(None)

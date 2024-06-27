@@ -17,3 +17,19 @@ async def create_user(session: AsyncSession, user_data: dict) -> UserOut:
     session.add(user)
     await session.commit()
     return user.to_dto()
+
+
+@pytest_asyncio.fixture
+async def create_users_for_pagination(session: AsyncSession, user_data: dict) -> list[UserOut]:
+    users: list[User] = []
+    for _ in range(20):
+        user = User.create(
+            phone=user_data["phone"],
+            email=user_data["email"],
+            password=user_data["password"],
+            hasher=PasswordHasher(),
+        )
+        users.append(user)
+    session.add_all(users)
+    await session.commit()
+    return [u.to_dto() for u in users]

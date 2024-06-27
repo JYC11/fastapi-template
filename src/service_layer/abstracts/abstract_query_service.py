@@ -17,5 +17,5 @@ class AbstractQueryService(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def paginate(self, req: Any, pagination_params: PaginationParams) -> tuple[list[Any], int]:
+    async def paginate(self, search_params: Any, pagination_params: PaginationParams) -> tuple[list[Any], int]:
         raise NotImplementedError
