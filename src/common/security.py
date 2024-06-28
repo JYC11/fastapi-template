@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 from uuid import uuid4
 
-from jose import ExpiredSignatureError, jwt
+from jose import jwt
 from pydantic import BaseModel
 
 from src.common.settings import settings
@@ -17,9 +17,9 @@ class InvalidToken(Exception): ...
 class Token(BaseModel):
     email: str
     phone: str
-    exp: str
+    exp: int
     sub: str
-    iat: str
+    iat: int
     jti: str
 
 
@@ -44,8 +44,9 @@ def create_jwt_token(
 def validate_jwt_token(token: str):
     try:
         decoded_token = jwt.decode(token=token, key=settings.jwt_settings.secret_key.get_secret_value())
-        return Token(**decoded_token)
-    except ExpiredSignatureError:
-        raise TokenExpired("token has expired")
+        out = Token(**decoded_token)
+        if out.iat > out.exp:
+            raise TokenExpired("token has expired")
+        return out
     except Exception as e:
         raise InvalidToken(f"token is invalid: {str(e)}")

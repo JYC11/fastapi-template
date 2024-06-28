@@ -1,4 +1,5 @@
 import asyncio
+from base64 import b64encode
 from datetime import timedelta
 from typing import AsyncGenerator, Generator, Type
 
@@ -155,10 +156,14 @@ def monkeypatch_jwt_settings(monkeypatch):
         authorization_type: str = "Bearer"
         verify: bool = True
         verify_expiration: bool = True
-        expiration_delta: timedelta = timedelta(seconds=0)
-        refresh_expiration_delta: timedelta = timedelta(seconds=0)
+        expiration_delta: timedelta = timedelta(seconds=-1)
+        refresh_expiration_delta: timedelta = timedelta(seconds=-1)
         allow_refresh: bool = True
         access_toke_expire_minutes: int = 60 * 24 * 8
+
+        @property
+        def secret_key(self):
+            return SecretStr(b64encode(self.raw_secret_key.get_secret_value().encode()).decode())
 
     fake_jwt_settings = FakeJwtSettings()
 
@@ -167,21 +172,7 @@ def monkeypatch_jwt_settings(monkeypatch):
 
 @pytest_asyncio.fixture
 def monkeypatch_create_jwt_token_invalid_token(monkeypatch):
-    monkeypatch.setattr(security, "create_jwt_token", lambda: "token")
+    def create_invalid_token(*args, **kwargs):
+        return "token"
 
-
-@pytest_asyncio.fixture
-def monkeypatch_validate_jwt_token_invalid_token(monkeypatch):
-
-    def raise_exception():
-        raise security.InvalidToken
-
-    monkeypatch.setattr(security, "validate_jwt_token", raise_exception)
-
-
-@pytest_asyncio.fixture
-def monkeypatch_validate_jwt_token_expired_token(monkeypatch):
-    def raise_exception():
-        raise security.TokenExpired
-
-    monkeypatch.setattr(security, "validate_jwt_token", raise_exception)
+    monkeypatch.setattr(security, "create_jwt_token", create_invalid_token)
