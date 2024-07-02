@@ -2,7 +2,7 @@ from typing import Literal
 
 from argon2 import PasswordHasher
 
-from src.common import security
+from src.common.security import token
 from src.domain.models import User
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service_layer.exceptions import Forbidden, Unauthorized
@@ -37,19 +37,19 @@ class AuthService:
 
             private_claims = {"email": user.email, "phone": user.phone}
 
-            token = security.create_jwt_token(
+            access_token = token.create_jwt_token(
                 subject=user.id,
                 private_claims=private_claims,
                 refresh=False,
             )
 
-            refresh_token = security.create_jwt_token(
+            refresh_token = token.create_jwt_token(
                 subject=user.id,
                 private_claims=private_claims,
                 refresh=True,
             )
 
-            return token, refresh_token
+            return access_token, refresh_token
 
     @logging_decorator(LOG_PATH)
     async def refresh(self, refresh_token: str, grant_type: Literal["refresh_token"]):
@@ -58,10 +58,10 @@ class AuthService:
                 raise Forbidden("incorrect grant type")
 
             try:
-                decoded: security.Token = security.validate_jwt_token(token=refresh_token)
-            except security.TokenExpired as e:
+                decoded: token.Token = token.validate_jwt_token(token=refresh_token)
+            except token.TokenExpired as e:
                 raise Forbidden(str(e))
-            except security.InvalidToken as e:
+            except token.InvalidToken as e:
                 raise Forbidden(str(e))
 
             id = decoded.sub
@@ -69,7 +69,7 @@ class AuthService:
             if not user:
                 raise Forbidden(f"user with {id} not found")
 
-            return security.create_jwt_token(
+            return token.create_jwt_token(
                 subject=user.id,
                 private_claims={
                     "email": user.email,

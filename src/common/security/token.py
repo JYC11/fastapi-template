@@ -32,7 +32,12 @@ def create_jwt_token(
         settings.jwt_settings.refresh_expiration_delta if refresh else settings.jwt_settings.expiration_delta
     )
     expiration_datetime = datetime.now() + expiration_delta
-    registered_claims = {"exp": expiration_datetime, "sub": subject, "iat": datetime.now(), "jti": uuid4().hex}
+    registered_claims = {
+        "exp": expiration_datetime,
+        "sub": subject,
+        "iat": datetime.now(),
+        "jti": uuid4().hex,
+    }
     claims = registered_claims | private_claims if private_claims else registered_claims
     return jwt.encode(
         claims=claims,
@@ -43,10 +48,12 @@ def create_jwt_token(
 
 def validate_jwt_token(token: str):
     try:
-        decoded_token = jwt.decode(token=token, key=settings.jwt_settings.secret_key.get_secret_value())
-        out = Token(**decoded_token)
-        if out.iat > out.exp:
+        decoded_token = jwt.decode(
+            token=token,
+            key=settings.jwt_settings.secret_key.get_secret_value(),
+        )
+        if decoded_token["iat"] > decoded_token["exp"]:
             raise TokenExpired("token has expired")
-        return out
+        return Token(**decoded_token)
     except Exception as e:
         raise InvalidToken(f"token is invalid: {str(e)}")
