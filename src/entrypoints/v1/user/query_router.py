@@ -6,7 +6,7 @@ from starlette import status
 
 from src.domain.models import User
 from src.domain.user.dto import UserOut, UserSearchParams
-from src.entrypoints.depdencies import PaginationParamDeps, UserQueryServiceDep
+from src.entrypoints.depdencies import GetToken, PaginationParamDeps, UserQueryServiceDep
 from src.entrypoints.v1.user.dto import UserPaginatedOut
 
 user_query_router = APIRouter()
@@ -14,6 +14,7 @@ user_query_router = APIRouter()
 
 @user_query_router.get("/users", response_model=UserPaginatedOut, status_code=status.HTTP_200_OK)
 async def paginate_users(
+    _: GetToken,
     query_service: UserQueryServiceDep,
     search_params: Annotated[UserSearchParams, Depends(UserSearchParams)],
     pagination_params: PaginationParamDeps,
@@ -36,6 +37,7 @@ async def paginate_users(
     status_code=status.HTTP_200_OK,
 )
 async def get_one_user(
+    _: GetToken,
     user_id: Annotated[str, Path],
     query_service: UserQueryServiceDep,
 ):

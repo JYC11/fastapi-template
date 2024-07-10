@@ -15,7 +15,7 @@ from starlette.testclient import TestClient
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
-from src.common import security
+from src.common.security import token
 from src.common.settings import settings
 from src.main import app
 from src.service_layer import unit_of_work, view
@@ -123,7 +123,7 @@ def message_bus(uow: AbstractUnitOfWork) -> MessageBus:
 
 
 @pytest.fixture(scope="function")
-def client(message_bus: MessageBus):
+def client(message_bus: MessageBus) -> Generator[TestClient, None, None]:
 
     # dependency injection here
     app.dependency_overrides[get_message_bus] = lambda: message_bus
@@ -175,4 +175,4 @@ def monkeypatch_create_jwt_token_invalid_token(monkeypatch):
     def create_invalid_token(*args, **kwargs):
         return "token"
 
-    monkeypatch.setattr(security, "create_jwt_token", create_invalid_token)
+    monkeypatch.setattr(token, "create_jwt_token", create_invalid_token)

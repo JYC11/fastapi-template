@@ -3,10 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Path
 from starlette import status
 
-from src.domain.models import User
 from src.domain.user.commands import CreateUser, DeleteUser, UpdateUser
 from src.domain.user.dto import UserOut
-from src.entrypoints.depdencies import MessageBusDep
+from src.entrypoints.depdencies import GetToken, MessageBusDep
 from src.entrypoints.dto import GenericResponse
 from src.entrypoints.v1.user.dto import UserCreateIn, UserUpdateIn
 
@@ -24,8 +23,8 @@ async def create_user(
 ):
     cmd = CreateUser(email=req.email, phone=req.phone, password=req.password)
     res = await message_bus.handle(message=cmd)
-    assert isinstance(res, User)
-    return res.to_dto()
+    assert isinstance(res, UserOut)
+    return res
 
 
 @user_command_router.patch(
@@ -34,6 +33,7 @@ async def create_user(
     status_code=status.HTTP_200_OK,
 )
 async def update_user(
+    _: GetToken,
     message_bus: MessageBusDep,
     user_id: Annotated[str, Path],
     req: Annotated[UserUpdateIn, Body()],
@@ -44,8 +44,8 @@ async def update_user(
         phone=req.phone,
     )
     res = await message_bus.handle(message=cmd)
-    assert isinstance(res, User)
-    return res.to_dto()
+    assert isinstance(res, UserOut)
+    return res
 
 
 @user_command_router.delete(
@@ -54,6 +54,7 @@ async def update_user(
     status_code=status.HTTP_200_OK,
 )
 async def delete_user(
+    _: GetToken,
     message_bus: MessageBusDep,
     user_id: Annotated[str, Path],
 ):

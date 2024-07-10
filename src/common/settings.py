@@ -54,6 +54,7 @@ class Settings(BaseSettings):
     is_ci: bool = False
     db_settings: DBSettings = DBSettings()
     jwt_settings: JWTSettings = JWTSettings()
+    test_url: str = "http://test"
     api_v1_str: str = "/api/v1"
     api_v1_login_url: str = "/api/v1/login"
 
