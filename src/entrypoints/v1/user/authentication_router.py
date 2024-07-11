@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from starlette import status
 
@@ -26,14 +26,14 @@ async def login_user(
     return LoginSuccess(token=token, refresh_token=refresh_token)
 
 
-@auth_router.get(
+@auth_router.post(
     "/refresh",
     response_model=RefreshSuccess,
     status_code=status.HTTP_200_OK,
 )
 async def refresh_token(
     auth_service: AuthServiceDep,
-    req: Annotated[RefreshRequest, Depends(RefreshRequest)],
+    req: Annotated[RefreshRequest, Body()],
 ):
     token = await auth_service.refresh(
         refresh_token=req.refresh_token,

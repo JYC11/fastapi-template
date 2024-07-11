@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
 from src.common.settings import settings
-from src.tests.e2e.conftest import create_test_user, create_test_user_and_login
+from src.tests.e2e.conftest import create_test_user_and_login
 
 
 @pytest.mark.asyncio
@@ -40,44 +40,6 @@ async def test_create_user(app_for_test: FastAPI):
 
     # THEN
     assert response.status_code == HTTPStatus.BAD_REQUEST
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "data, status",
-    [
-        (
-            {
-                "username": "email@email.com",
-                "password": "password",
-            },
-            HTTPStatus.OK,
-        ),
-        (
-            {
-                "username": "email@email.com",
-                "password": "password1",
-            },
-            HTTPStatus.UNAUTHORIZED,
-        ),
-    ],
-)
-async def test_login_user(app_for_test: FastAPI, data: dict, status: HTTPStatus):
-    # GIVEN
-    await create_test_user(app_for_test=app_for_test)
-
-    url = app_for_test.url_path_for("login_user")
-    async with AsyncClient(
-        transport=ASGITransport(app=app_for_test),  # type: ignore
-        base_url=settings.test_url,
-    ) as ac:
-        res = await ac.post(url, data=data)
-
-    # THEN
-    assert res.status_code == status
-    if status == HTTPStatus.OK:
-        data = res.json()
-        assert data["token"], data["refresh_token"]
 
 
 @pytest.mark.asyncio

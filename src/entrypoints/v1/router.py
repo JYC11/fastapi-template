@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from src.common.settings import settings
-from src.entrypoints.v1.user.auth_router import auth_router
+from src.entrypoints.v1.user.authentication_router import auth_router
 from src.entrypoints.v1.user.command_router import user_command_router
 from src.entrypoints.v1.user.query_router import user_query_router
 
