@@ -34,7 +34,7 @@ class UserQueryService(AbstractQueryService):
 
             filters: list[Any] = []
             if search_params.phone is not None:
-                filters.append(User.email.like(f"%{search_params.phone}%"))  # type: ignore
+                filters.append(User.phone.like(f"%{search_params.phone}%"))  # type: ignore
             if search_params.email is not None:
                 filters.append(User.email.like(f"%{search_params.email}%"))  # type: ignore
 

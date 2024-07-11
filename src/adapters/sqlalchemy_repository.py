@@ -1,4 +1,5 @@
-from typing import Any, Type, TypeVar
+import re
+from typing import Any, Generic, Type, TypeVar
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +12,7 @@ T = TypeVar("T", bound=object)
 
 
 # TODO: add way of doing joins?
-class SqlAlchemyRepository(AbstractRepository):  # type: ignore
+class SqlAlchemyRepository(Generic[T], AbstractRepository):  # type: ignore
     def __init__(self, session: AsyncSession, model: Type[T]):
         super().__init__(session)
         self.model = model
@@ -32,6 +33,8 @@ class SqlAlchemyRepository(AbstractRepository):  # type: ignore
         _filters.extend(args)
         if kwargs:
             for key, value in kwargs.items():
+                if not re.findall(r"\w+__\w+", key):
+                    raise ValueError("incorrect syntax, correct syntax example: id__eq")
                 column, operator = key.split("__")
                 try:
                     model_column = getattr(self.model, column)
