@@ -15,8 +15,8 @@ from starlette.testclient import TestClient
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.adapters.in_memory_orm import metadata, start_mappers
+from src.common.configs.settings import settings
 from src.common.security import token
-from src.common.settings import settings
 from src.main import app
 from src.service_layer import unit_of_work, view
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork

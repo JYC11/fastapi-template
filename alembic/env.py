@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from src.adapters.persistent_orm import mapper_registry
-from src.common.settings import settings
+from src.common.configs.settings import settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

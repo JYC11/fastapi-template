@@ -4,8 +4,8 @@ from fastapi import HTTPException, Security
 from fastapi.security.oauth2 import OAuth2PasswordBearer
 from starlette import status
 
+from src.common.configs.settings import settings
 from src.common.security.token import InvalidToken, Token, TokenExpired, validate_jwt_token
-from src.common.settings import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=settings.api_v1_login_url)
 

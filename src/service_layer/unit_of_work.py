@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import StaleDataError
 
 from src.adapters.abstract_repository import AbstractRepository
-from src.common.db import async_transactional_session_factory
+from src.common.configs.db_config import async_transactional_session_factory
 from src.domain import Message
 from src.service_layer import exceptions
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork

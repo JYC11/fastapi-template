@@ -5,7 +5,7 @@ from uuid import uuid4
 from jose import jwt
 from pydantic import BaseModel
 
-from src.common.settings import settings
+from src.common.configs.settings import settings
 
 
 class TokenExpired(Exception): ...

@@ -1,3 +1,4 @@
+import ast
 import sys
 from base64 import b64encode
 from datetime import timedelta
@@ -52,11 +53,13 @@ class JWTSettings(BaseSettings):
 class Settings(BaseSettings):
     stage: Literal["LOCAL", "TEST", "DEV", "STAGE", "PROD"] = config("STAGE")
     is_ci: bool = False
+    timezone: str = "Asia/Seoul"
     db_settings: DBSettings = DBSettings()
     jwt_settings: JWTSettings = JWTSettings()
     test_url: str = "http://test"
     api_v1_str: str = "/api/v1"
     api_v1_login_url: str = "/api/v1/login"
+    cors_origins: list[str] = ast.literal_eval(config("BACKEND_CORS_ORIGINS", default="['*']"))
 
 
 settings = Settings()

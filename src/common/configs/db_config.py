@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engin
 from sqlalchemy.orm import sessionmaker
 
 from src.adapters.persistent_orm import start_mappers
-from src.common.settings import settings
+from src.common.configs.settings import settings
 
 engine: AsyncEngine | None = None
 autocommit_engine: AsyncEngine | None = None

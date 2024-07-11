@@ -3,7 +3,7 @@ from http import HTTPStatus
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from src.common.settings import settings
+from src.common.configs.settings import settings
 
 
 async def create_test_user(app_for_test: FastAPI) -> dict:
