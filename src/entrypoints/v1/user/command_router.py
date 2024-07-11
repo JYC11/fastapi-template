@@ -37,6 +37,7 @@ async def update_user(
     user_id: Annotated[str, Path],
     req: Annotated[UserUpdateIn, Body()],
 ):
+    # TODO: add admin authorization
     cmd = UpdateUser(
         id=user_id,
         email=req.email,
@@ -56,6 +57,7 @@ async def delete_user(
     message_bus: MessageBusDep,
     user_id: Annotated[str, Path],
 ):
+    # TODO: add admin authorization
     cmd = DeleteUser(id=user_id)
     await message_bus.handle(message=cmd)
     return {"success": True}

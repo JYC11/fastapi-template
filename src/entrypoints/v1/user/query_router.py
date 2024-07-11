@@ -4,21 +4,26 @@ from fastapi import APIRouter, Path
 from fastapi.param_functions import Depends
 from starlette import status
 
-from src.domain.models import User
 from src.domain.user.dto import UserOut, UserSearchParams
 from src.entrypoints.depdencies import GetToken, PaginationParamDeps, UserQueryServiceDep
 from src.entrypoints.v1.user.dto import UserPaginatedOut
+from src.service_layer.exceptions import Forbidden
 
 user_query_router = APIRouter()
 
 
-@user_query_router.get("/users", response_model=UserPaginatedOut, status_code=status.HTTP_200_OK)
+@user_query_router.get(
+    "/users",
+    response_model=UserPaginatedOut,
+    status_code=status.HTTP_200_OK,
+)
 async def paginate_users(
     _: GetToken,
     query_service: UserQueryServiceDep,
     search_params: Annotated[UserSearchParams, Depends(UserSearchParams)],
     pagination_params: PaginationParamDeps,
-):
+) -> UserPaginatedOut:
+    # TODO: add authorization
     users, total = await query_service.paginate(
         search_params=search_params,
         pagination_params=pagination_params,
@@ -37,9 +42,12 @@ async def paginate_users(
     status_code=status.HTTP_200_OK,
 )
 async def get_one_user(
-    _: GetToken,
+    token: GetToken,
     user_id: Annotated[str, Path],
     query_service: UserQueryServiceDep,
-):
-    user: User = await query_service.get_one_or_raise(ident=user_id)
-    return user.to_dto()
+) -> UserOut:
+    if token.sub != user_id:
+        raise Forbidden("user id does not match token user id")
+    # TODO: add admin authorization
+    user: UserOut = await query_service.get_one_or_raise(ident=user_id)
+    return user
