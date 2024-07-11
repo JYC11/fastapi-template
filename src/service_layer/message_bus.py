@@ -60,6 +60,7 @@ class MessageBus:
                     message_name=type(event).__name__,
                     error_message=str(e),
                 )
+                raise e
 
     async def handle_command(self, command: Command):
         try:
@@ -74,6 +75,7 @@ class MessageBus:
                 message_name=type(command).__name__,
                 error_message=str(e),
             )
+            raise e
 
 
 event_handlers: dict[Type[Event], list[tuple[Callable[..., AbstractService], str]]] = defaultdict(list)

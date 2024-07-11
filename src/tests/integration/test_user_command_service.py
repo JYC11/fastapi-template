@@ -7,9 +7,8 @@ from src.domain.user.commands import CreateUser, DeleteUser, UpdateUser
 from src.domain.user.dto import UserOut
 from src.domain.user.events import UserCreated, UserDeleted, UserUpdated
 from src.service_layer.abstracts.abstract_service import AbstractService
-from src.service_layer.exceptions import ItemNotFound
+from src.service_layer.exceptions import DuplicateRecord, ItemNotFound
 from src.service_layer.service_factory import get_user_command_service
-from src.service_layer.user.exceptions import DuplicateUserByEmail, DuplicateUserByPhone
 
 
 @pytest.mark.asyncio
@@ -40,7 +39,7 @@ async def test_create_user_unhappy_path(create_user: UserOut):
     created = create_user
 
     # WHEN
-    with pytest.raises(DuplicateUserByEmail):  # THEN
+    with pytest.raises(DuplicateRecord):  # THEN
         await service.create(
             cmd=CreateUser(
                 email=created.email,
@@ -50,7 +49,7 @@ async def test_create_user_unhappy_path(create_user: UserOut):
         )
 
     # WHEN
-    with pytest.raises(DuplicateUserByPhone):  # THEN
+    with pytest.raises(DuplicateRecord):  # THEN
         await service.create(
             cmd=CreateUser(
                 email="email",

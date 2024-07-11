@@ -8,8 +8,7 @@ from src.domain.user.dto import UserOut
 from src.domain.user.events import UserCreated, UserDeleted, UserUpdated
 from src.service_layer.abstracts.abstract_service import AbstractService
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
-from src.service_layer.exceptions import ItemNotFound
-from src.service_layer.user.exceptions import DuplicateUserByEmail, DuplicateUserByPhone
+from src.service_layer.exceptions import DuplicateRecord, ItemNotFound
 from src.utils.log_utils import logging_decorator
 
 LOG_PATH = "src.service_layer.user.command_service.UserCommandService"
@@ -33,9 +32,9 @@ class UserCommandService(AbstractService):
             )
 
             if duplicate_user_by_email:
-                raise DuplicateUserByEmail()
+                raise DuplicateRecord("duplicate user by email")
             if duplicate_user_by_phone:
-                raise DuplicateUserByPhone()
+                raise DuplicateRecord("duplicate user by phone")
 
             user = User.create(
                 phone=cmd.phone,

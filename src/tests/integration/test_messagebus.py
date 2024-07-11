@@ -90,7 +90,8 @@ async def test_messagebus_unhappy_path(message_bus: MessageBus):
     message_bus.event_handlers = event_handlers
 
     # WHEN
-    await message_bus.handle(RaiseException())
+    with pytest.raises(ExampleException):
+        await message_bus.handle(RaiseException())
 
     # THEN
     async with message_bus.uow:

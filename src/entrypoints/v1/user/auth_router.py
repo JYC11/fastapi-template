@@ -10,7 +10,7 @@ from src.entrypoints.v1.user.dto import LoginSuccess, RefreshRequest, RefreshSuc
 auth_router = APIRouter()
 
 
-@auth_router.get(
+@auth_router.post(
     "/login",
     response_model=LoginSuccess,
     status_code=status.HTTP_200_OK,

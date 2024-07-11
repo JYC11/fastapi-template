@@ -23,7 +23,6 @@ async def create_user(
 ):
     cmd = CreateUser(email=req.email, phone=req.phone, password=req.password)
     res = await message_bus.handle(message=cmd)
-    assert isinstance(res, UserOut)
     return res
 
 
@@ -44,7 +43,6 @@ async def update_user(
         phone=req.phone,
     )
     res = await message_bus.handle(message=cmd)
-    assert isinstance(res, UserOut)
     return res
 
 
