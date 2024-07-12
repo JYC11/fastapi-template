@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 from uuid import uuid4
 
-from jose import jwt
+import jwt
 from pydantic import BaseModel
 
 from src.common.configs.settings import settings
@@ -33,14 +33,14 @@ def create_jwt_token(
     )
     expiration_datetime = datetime.now() + expiration_delta
     registered_claims = {
-        "exp": expiration_datetime,
+        "exp": int(expiration_datetime.timestamp()),
         "sub": subject,
-        "iat": datetime.now(),
+        "iat": int(datetime.now().timestamp()),
         "jti": uuid4().hex,
     }
     claims = registered_claims | private_claims if private_claims else registered_claims
     return jwt.encode(
-        claims=claims,
+        payload=claims,
         key=settings.jwt_settings.secret_key.get_secret_value(),
         algorithm=settings.jwt_settings.algorithm,
     )
@@ -49,11 +49,12 @@ def create_jwt_token(
 def validate_jwt_token(token: str):
     try:
         decoded_token = jwt.decode(
-            token=token,
+            jwt=token,
             key=settings.jwt_settings.secret_key.get_secret_value(),
+            algorithms=[settings.jwt_settings.algorithm],
         )
-        if decoded_token["iat"] > decoded_token["exp"]:
-            raise TokenExpired("token has expired")
         return Token(**decoded_token)
+    except jwt.ExpiredSignatureError:
+        raise TokenExpired("token has expired")
     except Exception as e:
         raise InvalidToken(f"token is invalid: {str(e)}")
