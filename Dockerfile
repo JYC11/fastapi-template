@@ -5,7 +5,9 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Copy the requirements file into the container
-COPY requirements.txt .
+COPY requirements.txt /app/
+# In case I want to run tests in docker
+COPY requirements-dev.txt /app/
 
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -16,5 +18,7 @@ COPY . /app/
 # Expose port 8000 for the app
 EXPOSE 8000
 
-# Command to run the FastAPI app with uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the Alembic migrations and start the FastAPI app
+RUN chmod +x scripts/run.sh
+CMD ["./scripts/run.sh"]
+
