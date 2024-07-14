@@ -7,13 +7,13 @@ run-local:
 	sh scripts/run.sh
 
 test-unit:
-	pytest src/tests/unit
+	pytest tests/unit
 
 test-integration:
-	pytest src/tests/integration
+	pytest tests/integration
 
 test-e2e:
-	pytest src/tests/e2e
+	pytest tests/e2e
 
 test:
 	pytest

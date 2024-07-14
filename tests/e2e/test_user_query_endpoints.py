@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
 from src.common.configs.settings import settings
-from src.tests.e2e.conftest import create_test_user_and_login, create_users_for_pagination
+from tests.e2e.conftest import create_test_user_and_login, create_users_for_pagination
 
 
 @pytest.mark.asyncio
