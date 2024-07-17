@@ -8,24 +8,6 @@ class AbstractRepository(abc.ABC):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    @abc.abstractmethod
-    def _add(self, item: Any) -> None: ...
-
-    @abc.abstractmethod
-    def _add_all(self, items: list[Any]) -> None: ...
-
-    @abc.abstractmethod
-    async def _get(self, ident: Any) -> Any | None: ...
-
-    @abc.abstractmethod
-    async def _get_by(self, *args, **kwargs) -> Any | None: ...
-
-    @abc.abstractmethod
-    async def _remove(self, ident: Any) -> None: ...
-
-    @abc.abstractmethod
-    async def _list(self, *args, **kwargs) -> list[Any]: ...
-
     def add(self, item: Any):
         self._add(item)
 
@@ -43,3 +25,21 @@ class AbstractRepository(abc.ABC):
 
     async def list(self, *args, **kwargs):
         return await self._list(*args, **kwargs)
+
+    @abc.abstractmethod
+    def _add(self, item: Any) -> None: ...
+
+    @abc.abstractmethod
+    def _add_all(self, items: list[Any]) -> None: ...
+
+    @abc.abstractmethod
+    async def _get(self, ident: Any) -> Any | None: ...
+
+    @abc.abstractmethod
+    async def _get_by(self, *args, **kwargs) -> Any | None: ...
+
+    @abc.abstractmethod
+    async def _remove(self, ident: Any) -> None: ...
+
+    @abc.abstractmethod
+    async def _list(self, *args, **kwargs) -> list[Any]: ...
