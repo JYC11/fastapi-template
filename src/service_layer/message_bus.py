@@ -2,7 +2,7 @@ from collections import defaultdict, deque
 from typing import Any, Callable, Literal, Type
 
 from src.domain import Command, Event, Message
-from src.domain.models import FailedMessageLog
+from src.domain.base import FailedMessageLog
 from src.domain.user import commands as user_commands
 from src.service_layer.abstracts.abstract_command_handler import CommandHandler
 from src.service_layer.abstracts.abstract_event_handler import EventHandler

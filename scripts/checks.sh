@@ -4,3 +4,4 @@ set -x
 ruff check --fix .
 black . --line-length=120
 mypy --check-untyped-defs -p src
+mypy --check-untyped-defs -p tests

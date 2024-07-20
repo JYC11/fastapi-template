@@ -2,8 +2,8 @@ from typing import Any
 
 from sqlalchemy import select
 
-from src.domain.models import User
 from src.domain.user.dto import UserOut, UserSearchParams
+from src.domain.user.model import User
 from src.entrypoints.dto import PaginationParams
 from src.service_layer.abstracts.abstract_query_service import AbstractQueryService
 from src.service_layer.abstracts.abstract_view import AbstractView

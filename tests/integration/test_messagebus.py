@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy.ext.asyncio import async_scoped_session
 
 from src.domain import Command, Event
-from src.domain.models import FailedMessageLog
+from src.domain.base import FailedMessageLog
 from src.service_layer.abstracts.abstract_command_handler import CommandHandler
 from src.service_layer.abstracts.abstract_event_handler import EventHandler
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork

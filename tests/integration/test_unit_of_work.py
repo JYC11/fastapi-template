@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from src.domain.models import User
+from src.domain.user.model import User
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service_layer.user.repository import UserRepository
 
@@ -27,6 +27,7 @@ async def test_can_get_record_and_update_it(uow: AbstractUnitOfWork, session: As
     # THEN
     execution = await session.execute(select(User).where(User.email == email))
     user: User | None = execution.scalar_one_or_none()
+    assert user is not None
     assert user.phone == new_phone
 
 

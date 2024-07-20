@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.domain.models import User
+from src.domain.user.model import User
 from src.service_layer.user.repository import UserRepository
 
 

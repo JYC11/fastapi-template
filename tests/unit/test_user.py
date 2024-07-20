@@ -1,6 +1,6 @@
 from argon2 import PasswordHasher
 
-from src.domain.models import User
+from src.domain.user.model import User
 
 
 def test_create_user():

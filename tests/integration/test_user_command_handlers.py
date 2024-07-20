@@ -20,7 +20,13 @@ async def test_create_user_happy_path():
     password = "password"
 
     # WHEN
-    user = await service.execute(cmd=CreateUser(email=email, phone=phone, password=password))
+    user = await service.execute(
+        cmd=CreateUser(
+            email=email,
+            phone=phone,
+            password=password,
+        )
+    )
     assert isinstance(user, UserOut)
 
     # THEN

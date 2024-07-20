@@ -2,8 +2,8 @@ import pytest_asyncio
 from argon2 import PasswordHasher
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.domain.models import User
 from src.domain.user.dto import UserOut
+from src.domain.user.model import User
 
 
 @pytest_asyncio.fixture
