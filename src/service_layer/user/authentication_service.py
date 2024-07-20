@@ -11,7 +11,7 @@ from src.utils.log_utils import logging_decorator
 LOG_PATH = "src.service_layer.user.command_service.AuthService"
 
 
-class AuthService:
+class AuthenticationService:
 
     def __init__(
         self,

@@ -54,7 +54,7 @@ class MessageBus:
             try:
                 service: EventHandler = handler_factory_func()
                 await service.execute(event=event)
-                self.queue.extendleft(service.uow.events)
+                self.queue.extendleft(service.events)
             except Exception as e:
                 await self._add_log(
                     message_type="EVENT",
@@ -68,7 +68,7 @@ class MessageBus:
             handler_factory_func = self.command_handlers[type(command)]
             service: CommandHandler = handler_factory_func()
             res = await service.execute(cmd=command)
-            self.queue.extendleft(service.uow.events)
+            self.queue.extendleft(service.events)
             return res
         except Exception as e:
             await self._add_log(

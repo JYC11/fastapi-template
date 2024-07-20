@@ -9,6 +9,9 @@ from src.domain.user.events import UserCreated, UserDeleted, UserUpdated
 from src.service_layer.abstracts.abstract_command_handler import CommandHandler
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service_layer.exceptions import DuplicateRecord, ItemNotFound
+from src.utils.log_utils import logging_decorator
+
+LOG_PATH = "src.service_layer.user.command_handlers"
 
 
 class UserCreationHandler(CommandHandler):
@@ -20,6 +23,7 @@ class UserCreationHandler(CommandHandler):
         self.uow = uow
         self.hasher = hasher
 
+    @logging_decorator(f"{LOG_PATH}.UserCreationHandler.execute")
     async def execute(self, cmd: CreateUser) -> UserOut:
         async with self.uow:
             duplicate_user_by_email, duplicate_user_by_phone = await asyncio.gather(
@@ -48,6 +52,7 @@ class UserUpdateHandler(CommandHandler):
     def __init__(self, uow: AbstractUnitOfWork):
         self.uow = uow
 
+    @logging_decorator(f"{LOG_PATH}.UserUpdateHandler.execute")
     async def execute(self, cmd: UpdateUser) -> UserOut:
         async with self.uow:
             user: User | None = await self.uow.user.get(ident=cmd.id)
@@ -69,6 +74,7 @@ class UserDeleteHandler(CommandHandler):
     def __init__(self, uow: AbstractUnitOfWork):
         self.uow = uow
 
+    @logging_decorator(f"{LOG_PATH}.UserDeleteHandler.execute")
     async def execute(self, cmd: DeleteUser) -> None:
         async with self.uow:
             await self.uow.user.remove(ident=cmd.id)

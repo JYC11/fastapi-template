@@ -41,10 +41,6 @@ class FailedMessageLog(Base):
 
 
 @dataclass(repr=True, eq=False)
-class JobStore(Base): ...
-
-
-@dataclass(repr=True, eq=False)
 class User(Base):
     phone: str = field(default="")
     email: str = field(default="")

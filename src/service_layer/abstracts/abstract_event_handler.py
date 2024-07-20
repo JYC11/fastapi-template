@@ -1,6 +1,8 @@
 import abc
+from collections import deque
 from typing import Any
 
+from src.domain import Message
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 
 
@@ -9,3 +11,7 @@ class EventHandler(abc.ABC):
 
     @abc.abstractmethod
     async def execute(self, event) -> Any: ...
+
+    @property
+    def events(self) -> deque[Message]:
+        return self.uow.events
