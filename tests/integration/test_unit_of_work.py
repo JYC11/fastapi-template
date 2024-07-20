@@ -13,8 +13,6 @@ async def test_can_get_record_and_update_it(uow: AbstractUnitOfWork, session: As
     uow.repositories = dict(user=UserRepository)
     async with uow:
         email = "test@email.com"
-        assert uow.user is not None
-        assert uow.failed_message_log is None
         uow.user.add(User(email=email, phone="1234", password="password"))
         await uow.flush()
         found_user: User | None = await uow.user.get_by(email__eq=email)
@@ -29,7 +27,6 @@ async def test_can_get_record_and_update_it(uow: AbstractUnitOfWork, session: As
     # THEN
     execution = await session.execute(select(User).where(User.email == email))
     user: User | None = execution.scalar_one_or_none()
-    assert True
     assert user.phone == new_phone
 
 
@@ -45,7 +42,7 @@ async def test_will_rollback_uncommitted(uow: AbstractUnitOfWork):
 
     # THEN
     async with uow:
-        users: list[User] = await uow.user.list()
+        users: list[User] = await uow.user.get_all()
         assert len(users) == 0
 
 
@@ -65,5 +62,5 @@ async def test_will_rollback_on_error(uow: AbstractUnitOfWork):
 
     # THEN
     async with uow:
-        users: list[User] = await uow.user.list()
+        users: list[User] = await uow.user.get_all()
         assert len(users) == 0

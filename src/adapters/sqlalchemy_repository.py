@@ -83,7 +83,7 @@ class SqlAlchemyRepository(Generic[T], AbstractRepository):  # type: ignore
             await self.session.delete(model)
         return
 
-    async def _list(
+    async def _get_all(
         self,
         *args,
         **kwargs,

@@ -52,7 +52,7 @@ async def test_repository(session: AsyncSession):
         ]
     )
     await session.commit()
-    users: list[User] = await repository.list()
+    users: list[User] = await repository.get_all()
     assert len(users) > 0
 
     # THEN
@@ -62,5 +62,5 @@ async def test_repository(session: AsyncSession):
     await repository.remove(ident=user.id)
 
     # THEN
-    after_delete_users: list[User] = await repository.list()
+    after_delete_users: list[User] = await repository.get_all()
     assert len(after_delete_users) == 2

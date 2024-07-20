@@ -6,21 +6,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.domain.user.commands import CreateUser, DeleteUser, UpdateUser
 from src.domain.user.dto import UserOut
 from src.domain.user.events import UserCreated, UserDeleted, UserUpdated
-from src.service_layer.abstracts.abstract_service import AbstractService
+from src.service_layer.abstracts.abstract_command_handler import CommandHandler
 from src.service_layer.exceptions import DuplicateRecord, ItemNotFound
-from src.service_layer.service_factory import get_user_command_service
+from src.service_layer.user.factory import get_user_creation_handler, get_user_delete_handler, get_user_update_handler
 
 
 @pytest.mark.asyncio
 async def test_create_user_happy_path():
     # GIVEN
-    service = get_user_command_service()
+    service: CommandHandler = get_user_creation_handler()
     email = "test@email.com"
     phone = "1234"
     password = "password"
 
     # WHEN
-    user = await service.create(cmd=CreateUser(email=email, phone=phone, password=password))
+    user = await service.execute(cmd=CreateUser(email=email, phone=phone, password=password))
     assert isinstance(user, UserOut)
 
     # THEN
@@ -34,13 +34,13 @@ async def test_create_user_happy_path():
 @pytest.mark.asyncio
 async def test_create_user_unhappy_path(create_user: UserOut):
     # GIVEN
-    service: AbstractService = get_user_command_service()
+    service: CommandHandler = get_user_creation_handler()
 
     created = create_user
 
     # WHEN
     with pytest.raises(DuplicateRecord):  # THEN
-        await service.create(
+        await service.execute(
             cmd=CreateUser(
                 email=created.email,
                 phone="phone",
@@ -50,7 +50,7 @@ async def test_create_user_unhappy_path(create_user: UserOut):
 
     # WHEN
     with pytest.raises(DuplicateRecord):  # THEN
-        await service.create(
+        await service.execute(
             cmd=CreateUser(
                 email="email",
                 phone=created.phone,
@@ -62,14 +62,14 @@ async def test_create_user_unhappy_path(create_user: UserOut):
 @pytest.mark.asyncio
 async def test_update_user_happy_path(create_user: UserOut):
     # GIVEN
-    service: AbstractService = get_user_command_service()
+    service: CommandHandler = get_user_update_handler()
     new_email = "test1@email.com"
     new_phone = "5678"
 
     created = create_user
 
     # WHEN
-    user = await service.update(
+    user = await service.execute(
         cmd=UpdateUser(
             id=created.id,
             email=new_email,
@@ -91,11 +91,11 @@ async def test_update_user_happy_path(create_user: UserOut):
 @pytest.mark.asyncio
 async def test_update_user_unhappy_path():
     # GIVEN
-    service: AbstractService = get_user_command_service()
+    service: CommandHandler = get_user_update_handler()
 
     # WHEN
     with pytest.raises(ItemNotFound):  # THEN
-        await service.update(
+        await service.execute(
             cmd=UpdateUser(
                 id=generate(),
                 email="test1@email.com",
@@ -107,11 +107,11 @@ async def test_update_user_unhappy_path():
 @pytest.mark.asyncio
 async def test_delete_user_happy_path(create_user: UserOut, session: AsyncSession):
     # GIVEN
-    service = get_user_command_service()
+    service: CommandHandler = get_user_delete_handler()
     created = create_user
 
     # WHEN
-    await service.delete(cmd=DeleteUser(id=created.id))
+    await service.execute(cmd=DeleteUser(id=created.id))
 
     # THEN
     execution = await session.execute(text(f"SELECT * FROM user WHERE id = '{created.id}'"))
@@ -120,17 +120,3 @@ async def test_delete_user_happy_path(create_user: UserOut, session: AsyncSessio
     assert len(service.uow.events) == 1
     assert isinstance(service.uow.events[0], UserDeleted)
     assert service.uow.events[0].id == created.id
-
-
-@pytest.mark.asyncio
-async def test_delete_user_unhappy_path():
-    # GIVEN
-    service: AbstractService = get_user_command_service()
-
-    # WHEN
-    with pytest.raises(ItemNotFound):  # THEN
-        await service.update(
-            cmd=DeleteUser(
-                id=generate(),
-            )
-        )

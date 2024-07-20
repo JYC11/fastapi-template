@@ -4,19 +4,20 @@ from typing import Any, Callable, Literal, Type
 from src.domain import Command, Event, Message
 from src.domain.models import FailedMessageLog
 from src.domain.user import commands as user_commands
-from src.service_layer import service_factory
-from src.service_layer.abstracts.abstract_service import AbstractService
+from src.service_layer.abstracts.abstract_command_handler import CommandHandler
+from src.service_layer.abstracts.abstract_event_handler import EventHandler
 from src.service_layer.abstracts.abstract_unit_of_work import AbstractUnitOfWork
 from src.service_layer.failed_message_log.repository import FailedMessageLogRepository
 from src.service_layer.unit_of_work import SqlAlchemyUnitOfWork
+from src.service_layer.user.factory import get_user_creation_handler, get_user_delete_handler, get_user_update_handler
 
 
 class MessageBus:
     def __init__(
         self,
         uow: AbstractUnitOfWork,
-        event_handlers: dict[Type[Event], list[tuple[Callable[..., AbstractService], str]]],
-        command_handlers: dict[Type[Command], tuple[Callable[..., AbstractService], str]],
+        event_handlers: dict[Type[Event], list[Callable[..., EventHandler]]],
+        command_handlers: dict[Type[Command], Callable[..., CommandHandler]],
     ) -> None:
         self.queue: deque[Message] = deque()
         self.uow = uow
@@ -49,10 +50,10 @@ class MessageBus:
             await self.uow.commit()
 
     async def handle_event(self, event: Event):
-        for service_factory_func, method_name in self.event_handlers[type(event)]:
+        for handler_factory_func in self.event_handlers[type(event)]:
             try:
-                service: AbstractService = service_factory_func()
-                await service.handle_event(method_name=method_name, event=event)
+                service: EventHandler = handler_factory_func()
+                await service.execute(event=event)
                 self.queue.extendleft(service.uow.events)
             except Exception as e:
                 await self._add_log(
@@ -64,9 +65,9 @@ class MessageBus:
 
     async def handle_command(self, command: Command):
         try:
-            service_factory_func, method_name = self.command_handlers[type(command)]
-            service: AbstractService = service_factory_func()
-            res = await service.handle_command(method_name=method_name, command=command)
+            handler_factory_func = self.command_handlers[type(command)]
+            service: CommandHandler = handler_factory_func()
+            res = await service.execute(cmd=command)
             self.queue.extendleft(service.uow.events)
             return res
         except Exception as e:
@@ -78,12 +79,12 @@ class MessageBus:
             raise e
 
 
-event_handlers: dict[Type[Event], list[tuple[Callable[..., AbstractService], str]]] = defaultdict(list)
+event_handlers: dict[Type[Event], list[Callable[..., EventHandler]]] = defaultdict(list)
 
-command_handlers: dict[Type[Command], tuple[Callable[..., AbstractService], str]] = {
-    user_commands.CreateUser: (service_factory.get_user_command_service, "create"),
-    user_commands.UpdateUser: (service_factory.get_user_command_service, "update"),
-    user_commands.DeleteUser: (service_factory.get_user_command_service, "delete"),
+command_handlers: dict[Type[Command], Callable[..., CommandHandler]] = {
+    user_commands.CreateUser: get_user_creation_handler,
+    user_commands.UpdateUser: get_user_update_handler,
+    user_commands.DeleteUser: get_user_delete_handler,
 }
 
 
