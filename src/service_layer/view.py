@@ -7,6 +7,8 @@ from sqlalchemy.sql import Select
 from src.adapters.abstract_repository import AbstractRepository
 from src.common.configs.db_config import async_autocommit_session_factory
 from src.service_layer.abstracts.abstract_view import AbstractView
+from src.service_layer.failed_message_log.repository import FailedMessageLogRepository
+from src.service_layer.user.repository import UserRepository
 
 DEFAULT_AUTOCOMMIT_SESSION_FACTORY = async_autocommit_session_factory
 
@@ -19,15 +21,15 @@ class SqlAlchemyView(AbstractView):
     ):
         self.repositories = repositories
         self.session_factory = session_factory
-        self.user: AbstractRepository | None = None  # type: ignore
-        self.failed_message_log: AbstractRepository | None = None  # type: ignore
+        self.user: UserRepository | None = None  # type: ignore
+        self.failed_message_log: FailedMessageLogRepository | None = None  # type: ignore
 
     async def __aenter__(self) -> AbstractView:
         self.session: AsyncSession = self.session_factory()
         if self.repositories:
             for attr, repository in self.repositories.items():
                 if hasattr(self, attr):
-                    setattr(self, attr, repository(session=self.session))
+                    setattr(self, attr, repository(session=self.session))  # type: ignore
         return await super().__aenter__()
 
     async def __aexit__(self, *args):

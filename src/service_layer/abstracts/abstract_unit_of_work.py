@@ -8,11 +8,13 @@ from sqlalchemy.sql import Select
 
 from src.adapters.abstract_repository import AbstractRepository
 from src.domain import Message
+from src.service_layer.failed_message_log.repository import FailedMessageLogRepository
+from src.service_layer.user.repository import UserRepository
 
 
 class AbstractUnitOfWork(abc.ABC):
-    user: AbstractRepository
-    failed_message_log: AbstractRepository
+    user: UserRepository
+    failed_message_log: FailedMessageLogRepository
 
     async def __aenter__(self) -> "AbstractUnitOfWork":
         self.session: AsyncSession

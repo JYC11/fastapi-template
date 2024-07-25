@@ -1,13 +1,8 @@
 import abc
 from typing import Any
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 
 class AbstractRepository(abc.ABC):
-    def __init__(self, session: AsyncSession):
-        self.session = session
-
     def add(self, item: Any):
         self._add(item)
 
